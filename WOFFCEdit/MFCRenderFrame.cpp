@@ -1,4 +1,3 @@
-
 #include "MFCRenderFrame.h"
 
 #ifdef _DEBUG
@@ -22,7 +21,6 @@ BEGIN_MESSAGE_MAP(CChildRender, CWnd)
 END_MESSAGE_MAP()
 
 
-
 // CChildView message handlers
 
 BOOL CChildRender::PreCreateWindow(CREATESTRUCT& cs)
@@ -33,7 +31,8 @@ BOOL CChildRender::PreCreateWindow(CREATESTRUCT& cs)
 	cs.dwExStyle |= WS_EX_CLIENTEDGE;
 	cs.style &= ~WS_BORDER;
 	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
-		::LoadCursor(NULL, IDC_ARROW), reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1), NULL);
+	                                   ::LoadCursor(nullptr, IDC_ARROW), reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1),
+	                                   nullptr);
 
 	return TRUE;
 }
@@ -42,7 +41,3 @@ void CChildRender::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 }
-
-
-
-

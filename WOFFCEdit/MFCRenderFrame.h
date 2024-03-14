@@ -1,5 +1,5 @@
 #pragma once
-#include <afxwin.h> 
+#include <afxwin.h>
 #include <afxext.h>
 
 
@@ -13,21 +13,18 @@ public:
 
 	// Attributes
 public:
-
 	// Operations
 public:
-
 	// Overrides
 protected:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	BOOL PreCreateWindow(CREATESTRUCT& cs) override;
 
 	// Implementation
 public:
-	virtual ~CChildRender();
+	~CChildRender() override;
 
 	// Generated message map functions
 protected:
 	afx_msg void OnPaint();
 	DECLARE_MESSAGE_MAP()
 };
-
