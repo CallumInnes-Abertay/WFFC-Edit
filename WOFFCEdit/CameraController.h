@@ -4,7 +4,7 @@
 
 using namespace DirectX::SimpleMath;
 
-class InputCommands;
+struct InputCommands;
 
 
 class CameraController
@@ -16,7 +16,7 @@ public:
 protected:
 	void Init();
 	void CreateUpdate();
-	void HandleMouse(InputCommands input_commands);
+	void HandleMouse(const InputCommands& input_commands);
 
 
 	//Floats

@@ -34,6 +34,8 @@ void CameraController::Init()
 	m_camOrientation.x = 0.0f;
 	m_camOrientation.y = 0.0f;
 	m_camOrientation.z = 0.0f;
+
+	//CreateUpdate();
 }
 
 void CameraController::CreateUpdate()
@@ -100,7 +102,7 @@ void CameraController::Update(const InputCommands& input_commands)
 	m_view = Matrix::CreateLookAt(m_camPosition, m_camLookAt, Vector3::UnitY);
 }
 
-void CameraController::HandleMouse(InputCommands input_commands)
+void CameraController::HandleMouse(const InputCommands& input_commands)
 {
 	m_newMouse = Vector2(input_commands.mouseX, input_commands.mouseY);
 
@@ -113,10 +115,12 @@ void CameraController::HandleMouse(InputCommands input_commands)
 
 		Difference.Normalize();
 
-		if (Difference.x != 0 || Difference.y != 0) // this will only run if the difference is not 0
+		if (Difference.x != 0 || Difference.y != 0)
 		{
-			m_camOrientation.y -= m_camRotRate * Difference.x; // yaw
-			m_camOrientation.x -= m_camRotRate * Difference.y; // pitch
+			// yaw
+			m_camOrientation.y -= m_camRotRate * Difference.x;
+			// pitch
+			m_camOrientation.x -= m_camRotRate * Difference.y; 
 		}
 
 		float cosR, cosP, cosY;
