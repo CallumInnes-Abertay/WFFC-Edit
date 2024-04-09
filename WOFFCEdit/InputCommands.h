@@ -2,6 +2,7 @@
 
 struct InputCommands
 {
+	//Camera Controls
 	bool forward;
 	bool back;
 	bool right;
@@ -16,4 +17,8 @@ struct InputCommands
 
 	bool LMB;
 	bool RMB;
+
+	//Non Camera Controls
+	bool shiftDown;
+	bool shiftUp;
 };

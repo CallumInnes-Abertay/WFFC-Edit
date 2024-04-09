@@ -377,5 +377,11 @@ void ToolMain::UpdateInput(MSG* msg)
 	}
 	else m_toolInputCommands.rotDown = false;
 
-	//WASD
+
+	// If "Shift" pressed using code.
+	if (m_keyArray[16])
+	{
+		m_toolInputCommands.shiftDown = true;
+	}
+	else m_toolInputCommands.shiftDown = false;
 }

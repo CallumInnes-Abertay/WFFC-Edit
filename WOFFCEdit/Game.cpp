@@ -19,11 +19,11 @@ using Microsoft::WRL::ComPtr;
 Game::Game()
 
 {
-	m_deviceResources = std::make_unique<DX::DeviceResources>();
+	m_deviceResources = std::make_shared<DX::DeviceResources>();
 	m_deviceResources->RegisterDeviceNotify(this);
 	m_displayList.clear();
 	m_camera = std::make_unique<CameraController>();
-	m_object_handler = std::make_unique<ObjectHandler>();
+	m_object_handler = std::make_unique<ObjectHandler>(m_deviceResources);
 
 	//initial Settings
 	//modes
@@ -64,6 +64,7 @@ void Game::Initialize(HWND window, int width, int height)
 	CreateWindowSizeDependentResources();
 
 	m_object_handler->Initialise(&m_displayList);
+
 
 #ifdef DXTK_AUDIO
     // Create DirectXTK for Audio objects
@@ -120,11 +121,53 @@ void Game::Tick(const InputCommands* Input)
 }
 
 
+// Updates the world.
+void Game::Update(const DX::StepTimer& timer) const
+{
+	//TODO  any more complex than this, and the camera should be abstracted out to somewhere else
+
+	m_camera->Update(m_InputCommands);
+
+
+	m_batchEffect->SetView(m_camera->GetViewMatix());
+	m_batchEffect->SetWorld(Matrix::Identity);
+	m_displayChunk.m_terrainEffect->SetView(m_camera->GetViewMatix());
+	m_displayChunk.m_terrainEffect->SetWorld(Matrix::Identity);
+
+#ifdef DXTK_AUDIO
+    m_audioTimerAcc -= (float)timer.GetElapsedSeconds();
+    if (m_audioTimerAcc < 0)
+    {
+        if (m_retryDefault)
+        {
+            m_retryDefault = false;
+            if (m_audEngine->Reset())
+            {
+                // Restart looping audio
+                m_effect1->Play(true);
+            }
+        }
+        else
+        {
+            m_audioTimerAcc = 4.f;
+
+            m_waveBank->Play(m_audioEvent++);
+
+            if (m_audioEvent >= 11)
+                m_audioEvent = 0;
+        }
+    }
+#endif
+}
+#pragma endregion
+
+
 int Game::MousePicking()
 {
 	int selectedID = -1;
 	float pickedDistance = 0;
 	float closestDistance = 200;
+
 
 	//setup near and far planes of frustum with mouse X and mouse y passed down from Toolmain. 
 	//they may look the same but note, the difference in Z
@@ -165,25 +208,49 @@ int Game::MousePicking()
 		XMVECTOR pickingVector = farPoint - nearPoint;
 		pickingVector = XMVector3Normalize(pickingVector);
 
-		//loop through mesh list for object
-		for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
+		// SINGLE SELECT
+		if (!m_InputCommands.shiftDown)
 		{
-			//checking for ray intersection
-			if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
-				nearPoint, pickingVector, pickedDistance))
+			m_object_handler->selectedObjects.clear();
+			//loop through mesh list for object
+			for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
 			{
-				if (pickedDistance <= closestDistance)
+				//checking for ray intersection
+				if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
+					nearPoint, pickingVector, pickedDistance))
 				{
-					closestDistance = pickedDistance;
-					selectedID = i;
-
-
+					if (pickedDistance <= closestDistance)
+					{
+						closestDistance = pickedDistance;
+						selectedID = i;
+					}
 				}
 			}
-		}
 
-		m_object_handler->selectedId = selectedID;
-		m_object_handler->TextureChange();
+			m_object_handler->selectedId = selectedID;
+			m_object_handler->TextureChange();
+		}
+		//MULTI SELECT
+		else
+		{
+			//loop through mesh list for object
+			for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
+			{
+				//checking for ray intersection
+				if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
+					nearPoint, pickingVector, pickedDistance))
+				{
+					if (pickedDistance <= closestDistance)
+					{
+						closestDistance = pickedDistance;
+						selectedID = i;
+					}
+				}
+			}
+
+			if (selectedID != -1) m_object_handler->selectedObjects.push_back(selectedID);
+			m_object_handler->MultiTextureChange();
+		}
 
 		//if(selectedID != -1) m_displayList[selectedID].m_wireframe = true;
 	}
@@ -191,47 +258,6 @@ int Game::MousePicking()
 	//if we got a hit.  return it.  
 	return selectedID;
 }
-
-
-// Updates the world.
-void Game::Update(const DX::StepTimer& timer) const
-{
-	//TODO  any more complex than this, and the camera should be abstracted out to somewhere else
-
-	m_camera->Update(m_InputCommands);
-
-
-	m_batchEffect->SetView(m_camera->GetViewMatix());
-	m_batchEffect->SetWorld(Matrix::Identity);
-	m_displayChunk.m_terrainEffect->SetView(m_camera->GetViewMatix());
-	m_displayChunk.m_terrainEffect->SetWorld(Matrix::Identity);
-
-#ifdef DXTK_AUDIO
-    m_audioTimerAcc -= (float)timer.GetElapsedSeconds();
-    if (m_audioTimerAcc < 0)
-    {
-        if (m_retryDefault)
-        {
-            m_retryDefault = false;
-            if (m_audEngine->Reset())
-            {
-                // Restart looping audio
-                m_effect1->Play(true);
-            }
-        }
-        else
-        {
-            m_audioTimerAcc = 4.f;
-
-            m_waveBank->Play(m_audioEvent++);
-
-            if (m_audioEvent >= 11)
-                m_audioEvent = 0;
-        }
-    }
-#endif
-}
-#pragma endregion
 
 #pragma region Frame Render
 // Draws the scene.
