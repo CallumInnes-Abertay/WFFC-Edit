@@ -14,6 +14,7 @@
 #include <vector>
 
 
+class ObjectHandler;
 class CameraController;
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -75,7 +76,7 @@ private:
 
 	//camera
 	std::unique_ptr<CameraController> m_camera;
-
+	std::unique_ptr<ObjectHandler> m_object_handler;
 
 	//control variables
 	bool m_grid; //grid rendering on / off
@@ -120,7 +121,6 @@ private:
 #endif
 
 	DirectX::SimpleMath::Matrix m_world;
-	DirectX::SimpleMath::Matrix m_view;
 	DirectX::SimpleMath::Matrix m_projection;
 };
 

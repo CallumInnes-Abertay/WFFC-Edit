@@ -4,6 +4,8 @@
 
 #include <afxwin.h> //needs to include this first. otherwise windows.h can mess things up. Cant have windows.h included in MFC projects. 
 
+
+
 #include "MFCMain.h"
 
 

@@ -120,7 +120,7 @@ void CameraController::HandleMouse(const InputCommands& input_commands)
 			// yaw
 			m_camOrientation.y -= m_camRotRate * Difference.x;
 			// pitch
-			m_camOrientation.x -= m_camRotRate * Difference.y; 
+			m_camOrientation.x -= m_camRotRate * Difference.y;
 		}
 
 		float cosR, cosP, cosY;
