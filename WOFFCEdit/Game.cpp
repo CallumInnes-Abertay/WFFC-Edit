@@ -127,6 +127,7 @@ void Game::Update(const DX::StepTimer& timer) const
 	//TODO  any more complex than this, and the camera should be abstracted out to somewhere else
 
 	m_camera->Update(m_InputCommands);
+	m_object_handler->Update(m_InputCommands);
 
 
 	m_batchEffect->SetView(m_camera->GetViewMatix());
@@ -168,7 +169,6 @@ int Game::MousePicking()
 	float pickedDistance = 0;
 	float closestDistance = 200;
 
-
 	//setup near and far planes of frustum with mouse X and mouse y passed down from Toolmain. 
 	//they may look the same but note, the difference in Z
 	const XMVECTOR nearSource = XMVectorSet(m_InputCommands.mouseX, m_InputCommands.mouseY, 0.0f, 1.0f);
@@ -207,10 +207,11 @@ int Game::MousePicking()
 		//turn the transformed points into our picking vector. 
 		XMVECTOR pickingVector = farPoint - nearPoint;
 		pickingVector = XMVector3Normalize(pickingVector);
-
+		// TODO Merge select systems to use just one method, possibly by clearing the vector each time, unless shift is held.
 		// SINGLE SELECT
 		if (!m_InputCommands.shiftDown)
 		{
+			// If we're in single selection we should now clear the selected object vector since none are being multi selected anymore.
 			m_object_handler->selectedObjects.clear();
 			//loop through mesh list for object
 			for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
@@ -219,6 +220,7 @@ int Game::MousePicking()
 				if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
 					nearPoint, pickingVector, pickedDistance))
 				{
+					//If the object is closer to the picked distance
 					if (pickedDistance <= closestDistance)
 					{
 						closestDistance = pickedDistance;
@@ -228,6 +230,7 @@ int Game::MousePicking()
 			}
 
 			m_object_handler->selectedId = selectedID;
+			// Change the selected object appropriately by changing texture.
 			m_object_handler->TextureChange();
 		}
 		//MULTI SELECT
@@ -240,24 +243,47 @@ int Game::MousePicking()
 				if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
 					nearPoint, pickingVector, pickedDistance))
 				{
+					//If the object is closer to the picked distance
 					if (pickedDistance <= closestDistance)
 					{
 						closestDistance = pickedDistance;
 						selectedID = i;
+
+						// If an object is already selected.
+						if (m_object_handler->selectedId != -1)
+						{
+							// Then now consider it part of the multi selection
+							m_object_handler->selectedObjects.push_back(m_object_handler->selectedId);
+							m_object_handler->selectedId = -1;
+						}
+
+						//Check if an object has already been selected, if so remove it from the list (assuming the vector already has values)
+						bool wasDuplicated = false;
+						if (!m_object_handler->selectedObjects.empty())
+						{
+							wasDuplicated = RemoveIntFromVector(m_object_handler->selectedObjects, i);
+						}
+						// If the selected object wasn't already in the vector, then add it and change the texture appropriately.
+						if (selectedID != -1 && !wasDuplicated)
+						{
+							m_object_handler->selectedObjects.push_back(selectedID);
+							m_object_handler->MultiTextureChange();
+						}
+						//If it was, then it's already removed, and thus should have a deselected texture.
+						else if (selectedID != -1 && wasDuplicated)
+						{
+							m_object_handler->RemoveTextureChange(i);
+						}
 					}
 				}
 			}
-
-			if (selectedID != -1) m_object_handler->selectedObjects.push_back(selectedID);
-			m_object_handler->MultiTextureChange();
 		}
-
-		//if(selectedID != -1) m_displayList[selectedID].m_wireframe = true;
 	}
 
 	//if we got a hit.  return it.  
 	return selectedID;
 }
+
 
 #pragma region Frame Render
 // Draws the scene.
@@ -652,4 +678,22 @@ std::wstring StringToWCHART(std::string s)
 	std::wstring r(buf);
 	delete[] buf;
 	return r;
+}
+
+
+bool RemoveIntFromVector(std::vector<int>& vec, const int target)
+{
+	// Find the element
+	auto it = std::find(vec.begin(), vec.end(), target);
+
+	// Check if found
+	if (it != vec.end())
+	{
+		// Erase the element and return true
+		vec.erase(it);
+		return true;
+	}
+
+	// Not found, return false
+	return false;
 }

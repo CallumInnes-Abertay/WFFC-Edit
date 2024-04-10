@@ -6,6 +6,7 @@
 using namespace DirectX::SimpleMath;
 
 class DisplayObject;
+struct InputCommands;
 
 class ObjectHandler
 {
@@ -14,12 +15,15 @@ public:
 	ObjectHandler(const std::shared_ptr<DX::DeviceResources>& device_resources);
 
 	void Initialise(std::vector<DisplayObject>* startingObjects);
-
-	int selectedId;
-	std::vector<int> selectedObjects;
+	void Update(const InputCommands& input_commands);
 
 	void TextureChange();
 	void MultiTextureChange();
+	void RemoveTextureChange(int idToRemove);
+
+	int selectedId;
+	std::vector<int> selectedObjects;
+	bool wasPreviousSelectionModeSingle = false;
 
 protected:
 

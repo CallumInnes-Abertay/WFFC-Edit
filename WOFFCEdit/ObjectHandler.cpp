@@ -1,6 +1,7 @@
 #include "ObjectHandler.h"
 
 #include "DisplayObject.h"
+#include "InputCommands.h"
 
 ObjectHandler::ObjectHandler()
 {
@@ -18,7 +19,46 @@ void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects)
 {
 	selectedId = -1;
 	allDisplayObjects = startingObjects;
-	//defaultSize = (*startingObjects)[0].m_scale;
+}
+
+void ObjectHandler::Update(const InputCommands& input_commands)
+{
+	if (selectedObjects.empty() && selectedId != -1)
+	{
+		for (int i = 0; i < allDisplayObjects->size(); ++i)
+		{
+			if (i == selectedId)
+			{
+				if (input_commands.forward)
+				{
+					(*allDisplayObjects)[selectedId].m_position.x += 0.1f;
+				}
+
+				if (input_commands.back)
+				{
+					(*allDisplayObjects)[selectedId].m_position.x -= 0.1f;
+				}
+			}
+		}
+	}
+	else if (!selectedObjects.empty())
+	{
+		for (int i = 0; i < allDisplayObjects->size(); ++i)
+		{
+			if (std::find(selectedObjects.begin(), selectedObjects.end(), i) != selectedObjects.end())
+			{
+				if (input_commands.forward)
+				{
+					(*allDisplayObjects)[i].m_position.x += 0.1f;
+				}
+
+				if (input_commands.back)
+				{
+					(*allDisplayObjects)[i].m_position.x -= 0.1f;
+				}
+			}
+		}
+	}
 }
 
 void ObjectHandler::TextureChange()
@@ -46,7 +86,8 @@ void ObjectHandler::TextureChange()
 		}
 		else if (i != selectedId)
 		{
-			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds", nullptr,
+			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+			                                  nullptr,
 			                                  &(*allDisplayObjects)[i].m_texture_diffuse);
 			(*allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
 			{
@@ -84,7 +125,29 @@ void ObjectHandler::MultiTextureChange()
 		}
 		else if (std::find(selectedObjects.begin(), selectedObjects.end(), i) != selectedObjects.end())
 		{
-			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds", nullptr,
+			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+			                                  nullptr,
+			                                  &(*allDisplayObjects)[i].m_texture_diffuse);
+			(*allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
+			{
+				const auto basic_effect = dynamic_cast<DirectX::BasicEffect*>(effect);
+				if (basic_effect)
+				{
+					basic_effect->SetTexture((*allDisplayObjects)[i].m_texture_diffuse);
+				}
+			});
+		}
+	}
+}
+
+void ObjectHandler::RemoveTextureChange(int idToRemove)
+{
+	for (int i = 0; i < allDisplayObjects->size(); ++i)
+	{
+		if (idToRemove == i)
+		{
+			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+			                                  nullptr,
 			                                  &(*allDisplayObjects)[i].m_texture_diffuse);
 			(*allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
 			{

@@ -125,3 +125,4 @@ private:
 };
 
 std::wstring StringToWCHART(std::string s);
+bool RemoveIntFromVector(std::vector<int>& vec, int target);
