@@ -3,6 +3,8 @@
 #include <afxwin.h>
 #include <afxext.h>
 #include <afx.h>
+
+#include "EditDialogue.h"
 #include "pch.h"
 #include "Game.h"
 #include "ToolMain.h"
@@ -25,6 +27,8 @@ private:
 	ToolMain m_ToolSystem; //Instance of Tool System that we interface to. 
 	CRect WindowRECT; //Window area rectangle. 
 	SelectDialogue m_ToolSelectDialogue; //for modeless dialogue, declare it here
+	EditDialogue m_ToolEditDialogue; //for modeless dialogue, declare it here
+
 
 	int m_width;
 	int m_height;
@@ -33,6 +37,8 @@ private:
 	afx_msg void MenuFileQuit();
 	afx_msg void MenuFileSaveTerrain();
 	afx_msg void MenuEditSelect();
+	afx_msg void MenuEditEdit();
+
 	afx_msg void ToolBarButton1();
 
 

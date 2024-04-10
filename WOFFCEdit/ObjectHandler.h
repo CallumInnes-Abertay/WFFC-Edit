@@ -1,4 +1,6 @@
 #pragma once
+#include <map>
+
 #include "DisplayChunk.h"
 #include <vector>
 #include <memory>
@@ -23,6 +25,7 @@ public:
 
 	int selectedId;
 	std::vector<int> selectedObjects;
+	std::map<int, bool> selectedObjects2;
 	bool wasPreviousSelectionModeSingle = false;
 
 protected:

@@ -65,6 +65,9 @@
     <ClCompile Include="ObjectHandler.cpp">
       <Filter>Tool</Filter>
     </ClCompile>
+    <ClCompile Include="EditDialogue.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceResources.h">
@@ -119,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="ObjectHandler.h">
       <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="EditDialogue.h">
+      <Filter>MFC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

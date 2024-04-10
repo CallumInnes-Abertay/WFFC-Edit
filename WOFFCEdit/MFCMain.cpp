@@ -1,11 +1,13 @@
 #include "MFCMain.h"
 #include "resource.h"
+#include "ObjectHandler.h"
 
 
 BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_FILE_QUIT, &MFCMain::MenuFileQuit)
 	ON_COMMAND(ID_FILE_SAVETERRAIN, &MFCMain::MenuFileSaveTerrain)
 	ON_COMMAND(ID_EDIT_SELECT, &MFCMain::MenuEditSelect)
+	ON_COMMAND(ID_EDIT_EDIT, &MFCMain::MenuEditEdit)
 	ON_COMMAND(ID_BUTTON40001, &MFCMain::ToolBarButton1)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
 END_MESSAGE_MAP()
@@ -101,6 +103,12 @@ void MFCMain::MenuEditSelect()
 	m_ToolSelectDialogue.Create(IDD_DIALOG1); //Start up modeless
 	m_ToolSelectDialogue.ShowWindow(SW_SHOW); //show modeless
 	m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
+}
+
+void MFCMain::MenuEditEdit()
+{
+	m_ToolEditDialogue.Create(IDD_EDIT_DIALOG); //Start up modeless
+	m_ToolEditDialogue.ShowWindow(SW_SHOW); //show modeless
 }
 
 void MFCMain::ToolBarButton1()

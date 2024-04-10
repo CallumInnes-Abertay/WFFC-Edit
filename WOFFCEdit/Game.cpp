@@ -254,6 +254,7 @@ int Game::MousePicking()
 						{
 							// Then now consider it part of the multi selection
 							m_object_handler->selectedObjects.push_back(m_object_handler->selectedId);
+							m_object_handler->selectedObjects2.try_emplace(m_object_handler->selectedId, true);
 							m_object_handler->selectedId = -1;
 						}
 
@@ -267,6 +268,8 @@ int Game::MousePicking()
 						if (selectedID != -1 && !wasDuplicated)
 						{
 							m_object_handler->selectedObjects.push_back(selectedID);
+							m_object_handler->selectedObjects2.try_emplace(selectedID, true);
+
 							m_object_handler->MultiTextureChange();
 						}
 						//If it was, then it's already removed, and thus should have a deselected texture.
