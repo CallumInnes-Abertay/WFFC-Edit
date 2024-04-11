@@ -9,6 +9,12 @@ void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects,
 	selectedId = -1;
 	allDisplayObjects = startingObjects;
 	m_device_resource = device_resources;
+
+
+	for (int i = 0; i < allDisplayObjects->size(); ++i)
+	{
+		(*allDisplayObjects)[i].m_ID = i;
+	}
 }
 
 void ObjectHandler::Update(const InputCommands& input_commands)
@@ -163,12 +169,12 @@ DisplayObject ObjectHandler::GetDisplayObject()
 	return DisplayObject();
 }
 
-void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams,int idToSet)
+void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams)
 {
 	
 		for (int i = 0; i < allDisplayObjects->size(); ++i)
 		{
-			if (i == idToSet)
+			if (i == newObjectParams.m_ID)
 			{
 				(*allDisplayObjects)[i].m_position = newObjectParams.m_position;
 				(*allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
@@ -186,7 +192,7 @@ void ObjectHandler::RollBackChanges()
 	const DisplayObject oldObject = objectHistory.top();
 	objectHistory.pop();
 
-	SetDisplayObject(oldObject,oldObject.m_ID);
+	SetDisplayObject(oldObject);
 }
 
 bool ObjectHandler::isInstanceMade = false;

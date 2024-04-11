@@ -33,7 +33,7 @@ public:
 	void RemoveTextureChange(int idToRemove);
 
 	DisplayObject GetDisplayObject();
-	void SetDisplayObject(const DisplayObject& newObjectParams, int idToSet);
+	void SetDisplayObject(const DisplayObject& newObjectParams);
 	void RollBackChanges();
 	bool isEditing = false;
 	int selectedId;

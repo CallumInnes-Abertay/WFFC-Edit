@@ -50,11 +50,6 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 	{
 		ObjectHandler::Instance().isEditing = true;
 		newObjectParams = ObjectHandler::Instance().GetDisplayObject();
-		if(ObjectHandler::Instance().objectHistory.empty())
-		{
-			//Set the initial value of the object before editing.
-			ObjectHandler::Instance().objectHistory.push(newObjectParams);
-		}
 	}
 
 
@@ -70,7 +65,15 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_X_ROTATION, newObjectParams.m_orientation.x);
 	DDX_Text(pDX, IDC_EDIT_Y_ROTATION, newObjectParams.m_orientation.y);
 	DDX_Text(pDX, IDC_EDIT_Z_ROTATION, newObjectParams.m_orientation.z);
+
 	newObjectParams.m_ID = *m_currentSelection;
+	if (ObjectHandler::Instance().objectHistory.empty())
+	{
+		//Set the initial value of the object before editing.
+		//newObjectParams.m_ID = *m_currentSelection;
+		ObjectHandler::Instance().objectHistory.push(newObjectParams);
+	}
+
 }
 
 
@@ -117,7 +120,7 @@ void EditDialogue::OnBnClickedButtonApply()
 	UpdateData(TRUE);
 	if (ObjectHandler::IsInstanceMade())
 	{
-		ObjectHandler::Instance().SetDisplayObject(newObjectParams,newObjectParams.m_ID);
+		ObjectHandler::Instance().SetDisplayObject(newObjectParams);
 	}
 	ObjectHandler::Instance().objectHistory.push(newObjectParams);
 }
