@@ -66,10 +66,10 @@ int MFCMain::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			if (!ObjectHandler::Instance().isEditing)
+	/*		if (!ObjectHandler::Instance().isEditing)
 			{
 				m_ToolSystem.m_toolInputCommands.LMB = false;
-			}
+			}*/
 			m_ToolSystem.UpdateInput(&msg);
 		}
 		else
@@ -103,15 +103,17 @@ void MFCMain::MenuEditSelect()
 	//m_ToolSelectDialogue.DoModal();	// start it up modal
 
 	//modeless dialogue must be declared in the class.   If we do local it will go out of scope instantly and destroy itself
+	m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
 	m_ToolSelectDialogue.Create(IDD_DIALOG1); //Start up modeless
 	m_ToolSelectDialogue.ShowWindow(SW_SHOW); //show modeless
-	m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
 }
 
 void MFCMain::MenuEditEdit()
 {
+	m_ToolEditDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
 	m_ToolEditDialogue.Create(IDD_EDIT_DIALOG); //Start up modeless
 	m_ToolEditDialogue.ShowWindow(SW_SHOW); //show modeless
+
 }
 
 void MFCMain::ToolBarButton1()

@@ -163,9 +163,8 @@ void Game::Update(const DX::StepTimer& timer) const
 
 int Game::MousePicking()
 {
-
 	int selectedID;
-	if(ObjectHandler::Instance().selectedId != -1 && ObjectHandler::Instance().isEditing)
+	if (ObjectHandler::Instance().selectedId != -1 && ObjectHandler::Instance().isEditing)
 	{
 		selectedID = ObjectHandler::Instance().selectedId;
 	}

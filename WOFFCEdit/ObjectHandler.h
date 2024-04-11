@@ -2,10 +2,11 @@
 #include "DisplayChunk.h"
 #include <vector>
 #include <memory>
+#include <stack>
+#include "DisplayObject.h"
 
 using namespace DirectX::SimpleMath;
 
-class DisplayObject;
 struct InputCommands;
 
 class ObjectHandler
@@ -25,17 +26,19 @@ public:
 	void Initialise(std::vector<DisplayObject>* startingObjects,
 	                const std::shared_ptr<DX::DeviceResources>& device_resources);
 	void Update(const InputCommands& input_commands);
+	static bool IsInstanceMade() { return isInstanceMade; }
 
 	void TextureChange();
 	void MultiTextureChange();
 	void RemoveTextureChange(int idToRemove);
 
 	DisplayObject GetDisplayObject();
-	void SetDisplayObject(const DisplayObject& newObjectParams);
+	void SetDisplayObject(const DisplayObject& newObjectParams, int idToSet);
+	void RollBackChanges();
 	bool isEditing = false;
 	int selectedId;
 	std::vector<int> selectedObjects;
-	static bool IsInstanceMade() { return isInstanceMade; }
+	std::stack<DisplayObject> objectHistory;
 
 protected:
 	ObjectHandler();

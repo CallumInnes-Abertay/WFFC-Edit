@@ -1,6 +1,5 @@
 #include "ObjectHandler.h"
 
-#include "DisplayObject.h"
 #include "InputCommands.h"
 
 
@@ -164,18 +163,30 @@ DisplayObject ObjectHandler::GetDisplayObject()
 	return DisplayObject();
 }
 
-void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams)
+void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams,int idToSet)
 {
-	for (int i = 0; i < allDisplayObjects->size(); ++i)
-	{
-		if (i == selectedId)
+	
+		for (int i = 0; i < allDisplayObjects->size(); ++i)
 		{
-			(*allDisplayObjects)[i].m_position = newObjectParams.m_position;
-			(*allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
-			(*allDisplayObjects)[i].m_orientation = newObjectParams.m_orientation;
-			return;
+			if (i == idToSet)
+			{
+				(*allDisplayObjects)[i].m_position = newObjectParams.m_position;
+				(*allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
+				(*allDisplayObjects)[i].m_orientation = newObjectParams.m_orientation;
+				return;
+			}
 		}
-	}
+	
+		
+}
+
+void ObjectHandler::RollBackChanges()
+{
+	if (objectHistory.empty()) return;
+	const DisplayObject oldObject = objectHistory.top();
+	objectHistory.pop();
+
+	SetDisplayObject(oldObject,oldObject.m_ID);
 }
 
 bool ObjectHandler::isInstanceMade = false;

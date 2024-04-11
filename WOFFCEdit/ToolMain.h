@@ -26,7 +26,7 @@ public: //methods
 	afx_msg void onActionSaveTerrain(); //save chunk geometry
 
 	void Tick(MSG* msg);
-	void UpdateInput(MSG* msg);
+	void UpdateInput(const MSG* msg);
 
 public: //variables
 	std::vector<SceneObject> m_sceneGraph; //our scenegraph storing all the objects in the current chunk

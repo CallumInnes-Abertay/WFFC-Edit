@@ -20,5 +20,6 @@ struct InputCommands
 
 	//Non Camera Controls
 	bool shiftDown;
+	bool controlDown;
 	bool shiftUp;
 };
