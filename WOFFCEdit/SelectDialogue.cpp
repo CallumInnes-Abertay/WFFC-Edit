@@ -4,15 +4,19 @@
 #include "stdafx.h"
 #include "SelectDialogue.h"
 
+#include "ObjectHandler.h"
+
 // SelectDialogue dialog
 
 IMPLEMENT_DYNAMIC(SelectDialogue, CDialogEx)
 
 //Message map.  Just like MFCMAIN.cpp.  This is where we catch button presses etc and point them to a handy dandy method.
 BEGIN_MESSAGE_MAP(SelectDialogue, CDialogEx)
+	ON_WM_CLOSE(&SelectDialogue::End)
 	ON_COMMAND(IDOK, &SelectDialogue::End) //ok button
 	ON_BN_CLICKED(IDOK, &SelectDialogue::OnBnClickedOk)
 	ON_LBN_SELCHANGE(IDC_LIST1, &SelectDialogue::Select) //listbox
+
 END_MESSAGE_MAP()
 
 
@@ -60,6 +64,19 @@ void SelectDialogue::End()
 	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
 }
 
+//BOOL SelectDialogue::PreTranslateMessage(MSG* pMsg)
+//{
+//	if (pMsg->message == WM_LBUTTONDOWN && // Check for left mouse button click
+//		GetDlgItem(IDCANCEL) == GetFocus())   // Check if close button has focus
+//	{#
+//		ObjectHandler::Instance().isEditing = false;
+//		End();  // Call your End function to close the window and stop editing
+//		return TRUE;  // Message handled, don't call default processing
+//	}
+//
+//	return CDialog::PreTranslateMessage(pMsg);  // Pass other messages to base class
+//}
+
 void SelectDialogue::Select()
 {
 	int index = m_listBox.GetCurSel();
@@ -68,11 +85,24 @@ void SelectDialogue::Select()
 	m_listBox.GetText(index, currentSelectionValue);
 
 	*m_currentSelection = _ttoi(currentSelectionValue);
+
+	// If something is already selected
+	if (ObjectHandler::Instance().selectedId != -1)
+	{
+		//Then removed that texture
+		ObjectHandler::Instance().RemoveTextureChange(ObjectHandler::Instance().selectedId);
+	}
+
+	//And set a new selection and then add a selected texture to it.
+	ObjectHandler::Instance().selectedId = *m_currentSelection;
+	ObjectHandler::Instance().TextureChange();
 }
 
 BOOL SelectDialogue::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	ObjectHandler::Instance().isEditing = true;
+
 
 	//uncomment for modal only
 	/*	//roll through all the objects in the scene graph and put an entry for each in the listbox
@@ -90,6 +120,7 @@ BOOL SelectDialogue::OnInitDialog()
 
 void SelectDialogue::PostNcDestroy()
 {
+	ObjectHandler::Instance().isEditing = false;
 }
 
 
@@ -123,4 +154,9 @@ void SelectDialogue::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
+}
+
+void SelectDialogue::OnClose()
+{
+	End();
 }

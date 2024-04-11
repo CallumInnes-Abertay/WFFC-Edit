@@ -3,6 +3,7 @@
 
 #include "EditDialogue.h"
 #include "DisplayObject.h"
+#include "ObjectHandler.h"
 
 #include "stdafx.h"
 
@@ -12,6 +13,7 @@ IMPLEMENT_DYNAMIC(EditDialogue, CDialogEx)
 
 //Message map.  Just like MFCMAIN.cpp.  This is where we catch button presses etc and point them to a handy dandy method.
 BEGIN_MESSAGE_MAP(EditDialogue, CDialogEx)
+	ON_WM_CLOSE(&EditDialogue::End)
 	ON_COMMAND(IDOK, &EditDialogue::End) //ok button
 	ON_BN_CLICKED(IDOK, &EditDialogue::OnBnClickedOk)
 	ON_BN_CLICKED(ID_BUTTON_APPLY, &EditDialogue::OnBnClickedButtonApply)
@@ -44,25 +46,31 @@ void EditDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int* sele
 void EditDialogue::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DisplayObject newObjectParam;
-
-	DDX_Text(pDX, IDC_EDIT_X_POSITION, newObjectParam.m_position.x);
-	DDX_Text(pDX, IDC_EDIT_Y_POSITION, newObjectParam.m_position.y);
-	DDX_Text(pDX, IDC_EDIT_Z_POSITION, newObjectParam.m_position.z);
-
-	DDX_Text(pDX, IDC_EDIT_X_SCALE, newObjectParam.m_scale.x);
-	DDX_Text(pDX, IDC_EDIT_Y_SCALE, newObjectParam.m_scale.y);
-	DDX_Text(pDX, IDC_EDIT_Z_SCALE, newObjectParam.m_scale.z);
+	if (ObjectHandler::IsInstanceMade())
+	{
+		ObjectHandler::Instance().isEditing = true;
+		newObjectParams = ObjectHandler::Instance().GetDisplayObject();
+	}
 
 
-	DDX_Text(pDX, IDC_EDIT_X_ROTATION, newObjectParam.m_orientation.x);
-	DDX_Text(pDX, IDC_EDIT_Y_ROTATION, newObjectParam.m_orientation.y);
-	DDX_Text(pDX, IDC_EDIT_Z_ROTATION, newObjectParam.m_orientation.z);
+	DDX_Text(pDX, IDC_EDIT_X_POSITION, newObjectParams.m_position.x);
+	DDX_Text(pDX, IDC_EDIT_Y_POSITION, newObjectParams.m_position.y);
+	DDX_Text(pDX, IDC_EDIT_Z_POSITION, newObjectParams.m_position.z);
+
+	DDX_Text(pDX, IDC_EDIT_X_SCALE, newObjectParams.m_scale.x);
+	DDX_Text(pDX, IDC_EDIT_Y_SCALE, newObjectParams.m_scale.y);
+	DDX_Text(pDX, IDC_EDIT_Z_SCALE, newObjectParams.m_scale.z);
+
+
+	DDX_Text(pDX, IDC_EDIT_X_ROTATION, newObjectParams.m_orientation.x);
+	DDX_Text(pDX, IDC_EDIT_Y_ROTATION, newObjectParams.m_orientation.y);
+	DDX_Text(pDX, IDC_EDIT_Z_ROTATION, newObjectParams.m_orientation.z);
 }
 
 
 void EditDialogue::End()
 {
+	ObjectHandler::Instance().isEditing = false;
 	DestroyWindow();
 	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
 }
@@ -101,4 +109,14 @@ void EditDialogue::OnBnClickedButtonApply()
 	// TODO: Add your control notification handler code here
 
 	UpdateData(TRUE);
+	if (ObjectHandler::IsInstanceMade())
+	{
+		ObjectHandler::Instance().SetDisplayObject(newObjectParams);
+	}
+}
+
+void EditDialogue::OnClose()
+{
+	CDialogEx::OnCancel();
+	End();
 }

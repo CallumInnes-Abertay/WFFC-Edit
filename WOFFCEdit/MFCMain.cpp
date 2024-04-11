@@ -66,7 +66,10 @@ int MFCMain::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-
+			if (!ObjectHandler::Instance().isEditing)
+			{
+				m_ToolSystem.m_toolInputCommands.LMB = false;
+			}
 			m_ToolSystem.UpdateInput(&msg);
 		}
 		else

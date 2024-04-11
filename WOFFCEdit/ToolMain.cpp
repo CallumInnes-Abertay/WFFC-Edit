@@ -3,6 +3,8 @@
 #include <vector>
 #include <sstream>
 
+#include "ObjectHandler.h"
+
 //
 //ToolMain Class
 ToolMain::ToolMain()
@@ -281,11 +283,7 @@ void ToolMain::Tick(MSG* msg)
 	//do we have a selection
 	//do we have a mode
 	//are we clicking / dragging /releasing
-	if (m_toolInputCommands.LMB)
-	{
-		m_selectedObject = m_d3dRenderer.MousePicking();
-		m_toolInputCommands.LMB = false;
-	}
+
 
 	//has something changed
 	//update Scenegraph
@@ -377,6 +375,11 @@ void ToolMain::UpdateInput(MSG* msg)
 	}
 	else m_toolInputCommands.rotDown = false;
 
+	if (m_toolInputCommands.LMB)
+	{
+		m_selectedObject = m_d3dRenderer.MousePicking();
+		m_toolInputCommands.LMB = false;
+	}
 
 	// If "Shift" pressed using code.
 	if (m_keyArray[16])

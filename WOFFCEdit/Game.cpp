@@ -23,7 +23,6 @@ Game::Game()
 	m_deviceResources->RegisterDeviceNotify(this);
 	m_displayList.clear();
 	m_camera = std::make_unique<CameraController>();
-	m_object_handler = std::make_unique<ObjectHandler>(m_deviceResources);
 
 	//initial Settings
 	//modes
@@ -62,8 +61,7 @@ void Game::Initialize(HWND window, int width, int height)
 
 	m_deviceResources->CreateWindowSizeDependentResources();
 	CreateWindowSizeDependentResources();
-
-	m_object_handler->Initialise(&m_displayList);
+	ObjectHandler::Instance().Initialise(&m_displayList, m_deviceResources);
 
 
 #ifdef DXTK_AUDIO
@@ -127,7 +125,7 @@ void Game::Update(const DX::StepTimer& timer) const
 	//TODO  any more complex than this, and the camera should be abstracted out to somewhere else
 
 	m_camera->Update(m_InputCommands);
-	m_object_handler->Update(m_InputCommands);
+	ObjectHandler::Instance().Update(m_InputCommands);
 
 
 	m_batchEffect->SetView(m_camera->GetViewMatix());
@@ -165,7 +163,16 @@ void Game::Update(const DX::StepTimer& timer) const
 
 int Game::MousePicking()
 {
-	int selectedID = -1;
+
+	int selectedID;
+	if(ObjectHandler::Instance().selectedId != -1 && ObjectHandler::Instance().isEditing)
+	{
+		selectedID = ObjectHandler::Instance().selectedId;
+	}
+	else
+	{
+		selectedID = -1;
+	}
 	float pickedDistance = 0;
 	float closestDistance = 200;
 
@@ -212,7 +219,7 @@ int Game::MousePicking()
 		if (!m_InputCommands.shiftDown)
 		{
 			// If we're in single selection we should now clear the selected object vector since none are being multi selected anymore.
-			m_object_handler->selectedObjects.clear();
+			ObjectHandler::Instance().selectedObjects.clear();
 			//loop through mesh list for object
 			for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
 			{
@@ -228,10 +235,17 @@ int Game::MousePicking()
 					}
 				}
 			}
-
-			m_object_handler->selectedId = selectedID;
-			// Change the selected object appropriately by changing texture.
-			m_object_handler->TextureChange();
+			if (selectedID != -1)
+			{
+				ObjectHandler::Instance().selectedId = selectedID;
+				// Change the selected object appropriately by changing texture.
+				ObjectHandler::Instance().TextureChange();
+			}
+			else
+			{
+				ObjectHandler::Instance().RemoveTextureChange(ObjectHandler::Instance().selectedId);
+				ObjectHandler::Instance().selectedId = -1;
+			}
 		}
 		//MULTI SELECT
 		else
@@ -250,32 +264,30 @@ int Game::MousePicking()
 						selectedID = i;
 
 						// If an object is already selected.
-						if (m_object_handler->selectedId != -1)
+						if (ObjectHandler::Instance().selectedId != -1)
 						{
 							// Then now consider it part of the multi selection
-							m_object_handler->selectedObjects.push_back(m_object_handler->selectedId);
-							m_object_handler->selectedObjects2.try_emplace(m_object_handler->selectedId, true);
-							m_object_handler->selectedId = -1;
+							ObjectHandler::Instance().selectedObjects.push_back(ObjectHandler::Instance().selectedId);
+							ObjectHandler::Instance().selectedId = -1;
 						}
 
 						//Check if an object has already been selected, if so remove it from the list (assuming the vector already has values)
 						bool wasDuplicated = false;
-						if (!m_object_handler->selectedObjects.empty())
+						if (!ObjectHandler::Instance().selectedObjects.empty())
 						{
-							wasDuplicated = RemoveIntFromVector(m_object_handler->selectedObjects, i);
+							wasDuplicated = RemoveIntFromVector(ObjectHandler::Instance().selectedObjects, i);
 						}
 						// If the selected object wasn't already in the vector, then add it and change the texture appropriately.
 						if (selectedID != -1 && !wasDuplicated)
 						{
-							m_object_handler->selectedObjects.push_back(selectedID);
-							m_object_handler->selectedObjects2.try_emplace(selectedID, true);
+							ObjectHandler::Instance().selectedObjects.push_back(selectedID);
 
-							m_object_handler->MultiTextureChange();
+							ObjectHandler::Instance().MultiTextureChange();
 						}
 						//If it was, then it's already removed, and thus should have a deselected texture.
 						else if (selectedID != -1 && wasDuplicated)
 						{
-							m_object_handler->RemoveTextureChange(i);
+							ObjectHandler::Instance().RemoveTextureChange(i);
 						}
 					}
 				}

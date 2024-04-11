@@ -76,7 +76,6 @@ private:
 
 	//camera
 	std::unique_ptr<CameraController> m_camera;
-	std::unique_ptr<ObjectHandler> m_object_handler;
 
 	//control variables
 	bool m_grid; //grid rendering on / off

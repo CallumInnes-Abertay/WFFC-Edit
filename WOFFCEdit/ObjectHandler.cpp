@@ -3,22 +3,13 @@
 #include "DisplayObject.h"
 #include "InputCommands.h"
 
-ObjectHandler::ObjectHandler()
-{
-	selectedId = -1;
-}
 
-ObjectHandler::ObjectHandler(const std::shared_ptr<DX::DeviceResources>& device_resources):
-	allDisplayObjects(nullptr)
-{
-	selectedId = -1;
-	m_device_resource = device_resources;
-}
-
-void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects)
+void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects,
+                               const std::shared_ptr<DX::DeviceResources>& device_resources)
 {
 	selectedId = -1;
 	allDisplayObjects = startingObjects;
+	m_device_resource = device_resources;
 }
 
 void ObjectHandler::Update(const InputCommands& input_commands)
@@ -160,3 +151,31 @@ void ObjectHandler::RemoveTextureChange(int idToRemove)
 		}
 	}
 }
+
+DisplayObject ObjectHandler::GetDisplayObject()
+{
+	for (int i = 0; i < allDisplayObjects->size(); ++i)
+	{
+		if (i == selectedId)
+		{
+			return (*allDisplayObjects)[i];
+		}
+	}
+	return DisplayObject();
+}
+
+void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams)
+{
+	for (int i = 0; i < allDisplayObjects->size(); ++i)
+	{
+		if (i == selectedId)
+		{
+			(*allDisplayObjects)[i].m_position = newObjectParams.m_position;
+			(*allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
+			(*allDisplayObjects)[i].m_orientation = newObjectParams.m_orientation;
+			return;
+		}
+	}
+}
+
+bool ObjectHandler::isInstanceMade = false;

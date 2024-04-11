@@ -7,6 +7,8 @@
 #include "SceneObject.h"
 #include <vector>
 
+#include "DisplayObject.h"
+
 // EditDialogue dialog
 
 class ObjectHandler;
@@ -35,6 +37,7 @@ protected:
 	std::vector<SceneObject>* m_sceneGraph;
 	int* m_currentSelection;
 
+	DisplayObject newObjectParams;
 
 	DECLARE_MESSAGE_MAP()
 
@@ -45,8 +48,7 @@ public:
 	void PostNcDestroy() override;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonApply();
-
-	std::shared_ptr<ObjectHandler> object_handler;
+	afx_msg void OnClose();
 };
 
 
