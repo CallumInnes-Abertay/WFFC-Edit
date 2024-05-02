@@ -388,9 +388,14 @@ void ToolMain::UpdateInput(const MSG* msg)
 	{
 		m_toolInputCommands.shiftDown = true;
 		m_keyArray[16] = false;
-
 	}
 	else m_toolInputCommands.shiftDown = false;
+
+	if (m_keyArray['K'])
+	{
+		m_keyArray['K'] = false;
+		ObjectHandler::Instance().SpawnObject();
+	}
 
 	//If "left control" pressed using code.
 	if (m_keyArray[17])

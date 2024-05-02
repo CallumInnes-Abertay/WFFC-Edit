@@ -171,19 +171,16 @@ DisplayObject ObjectHandler::GetDisplayObject()
 
 void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams)
 {
-	
-		for (int i = 0; i < allDisplayObjects->size(); ++i)
+	for (int i = 0; i < allDisplayObjects->size(); ++i)
+	{
+		if (i == newObjectParams.m_ID)
 		{
-			if (i == newObjectParams.m_ID)
-			{
-				(*allDisplayObjects)[i].m_position = newObjectParams.m_position;
-				(*allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
-				(*allDisplayObjects)[i].m_orientation = newObjectParams.m_orientation;
-				return;
-			}
+			(*allDisplayObjects)[i].m_position = newObjectParams.m_position;
+			(*allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
+			(*allDisplayObjects)[i].m_orientation = newObjectParams.m_orientation;
+			return;
 		}
-	
-		
+	}
 }
 
 void ObjectHandler::RollBackChanges()
@@ -193,6 +190,21 @@ void ObjectHandler::RollBackChanges()
 	objectHistory.pop();
 
 	SetDisplayObject(oldObject);
+}
+
+void ObjectHandler::SpawnObject()
+{
+	DisplayObject objectToSpawn;
+	objectToSpawn = (*allDisplayObjects)[0];
+	
+	objectToSpawn.m_position = Vector3(2, 2, 4);
+	objectToSpawn.m_scale = Vector3(1, 1, 1);
+	objectToSpawn.m_orientation = Vector3(0, 0, 0);
+
+
+	objectToSpawn.m_ID = allDisplayObjects->size() + 1;
+	
+	allDisplayObjects->push_back(objectToSpawn);
 }
 
 bool ObjectHandler::isInstanceMade = false;

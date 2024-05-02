@@ -32,6 +32,8 @@ public:
 
 protected:
 	void DoDataExchange(CDataExchange* pDX) override; // DDX/DDV support
+	BOOL PreTranslateMessage(MSG* pMsg) override;
+	void OnKillfocusEdit(CEdit& controlEdit);
 	afx_msg void End(); //kill the dialogue
 
 	std::vector<SceneObject>* m_sceneGraph;
@@ -49,6 +51,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonApply();
 	afx_msg void OnClose();
+	bool IsValidFloat(const CString& strInput);
 };
 
 

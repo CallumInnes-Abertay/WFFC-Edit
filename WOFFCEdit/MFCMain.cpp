@@ -66,10 +66,10 @@ int MFCMain::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-	/*		if (!ObjectHandler::Instance().isEditing)
-			{
-				m_ToolSystem.m_toolInputCommands.LMB = false;
-			}*/
+			/*		if (!ObjectHandler::Instance().isEditing)
+					{
+						m_ToolSystem.m_toolInputCommands.LMB = false;
+					}*/
 			m_ToolSystem.UpdateInput(&msg);
 		}
 		else
@@ -113,7 +113,6 @@ void MFCMain::MenuEditEdit()
 	m_ToolEditDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
 	m_ToolEditDialogue.Create(IDD_EDIT_DIALOG); //Start up modeless
 	m_ToolEditDialogue.ShowWindow(SW_SHOW); //show modeless
-
 }
 
 void MFCMain::ToolBarButton1()

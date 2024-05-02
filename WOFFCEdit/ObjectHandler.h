@@ -35,6 +35,9 @@ public:
 	DisplayObject GetDisplayObject();
 	void SetDisplayObject(const DisplayObject& newObjectParams);
 	void RollBackChanges();
+	void SpawnObject();
+
+
 	bool isEditing = false;
 	int selectedId;
 	std::vector<int> selectedObjects;

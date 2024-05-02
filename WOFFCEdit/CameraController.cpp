@@ -47,18 +47,7 @@ void CameraController::CreateUpdate()
 void CameraController::Update(const InputCommands& input_commands)
 {
 	HandleMouse(input_commands);
-	if (m_camOrientation == Vector3(0.0f, 0.0f, 0.0f))
-	{
-		m_camOrientation = Vector3(0.1f, 0.1f, 0.1f);
-	}
 
-	if (m_camLookDirection == Vector3(0.0f, 0.0f, 0.0f))
-	{
-		m_camLookDirection = Vector3(0.1f, 0.1f, 0.1f);
-	}
-
-	Vector3 planarMotionVector = m_camLookDirection;
-	planarMotionVector.y = 0.0;
 
 	if (input_commands.rotRight)
 	{

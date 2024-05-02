@@ -2,6 +2,9 @@
 //
 
 #include "EditDialogue.h"
+
+#include <regex>
+
 #include "DisplayObject.h"
 #include "ObjectHandler.h"
 
@@ -52,16 +55,18 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 		newObjectParams = ObjectHandler::Instance().GetDisplayObject();
 	}
 
-
+	//Set position
 	DDX_Text(pDX, IDC_EDIT_X_POSITION, newObjectParams.m_position.x);
 	DDX_Text(pDX, IDC_EDIT_Y_POSITION, newObjectParams.m_position.y);
 	DDX_Text(pDX, IDC_EDIT_Z_POSITION, newObjectParams.m_position.z);
 
+	//Set scale
 	DDX_Text(pDX, IDC_EDIT_X_SCALE, newObjectParams.m_scale.x);
 	DDX_Text(pDX, IDC_EDIT_Y_SCALE, newObjectParams.m_scale.y);
 	DDX_Text(pDX, IDC_EDIT_Z_SCALE, newObjectParams.m_scale.z);
 
 
+	//Set rotation
 	DDX_Text(pDX, IDC_EDIT_X_ROTATION, newObjectParams.m_orientation.x);
 	DDX_Text(pDX, IDC_EDIT_Y_ROTATION, newObjectParams.m_orientation.y);
 	DDX_Text(pDX, IDC_EDIT_Z_ROTATION, newObjectParams.m_orientation.z);
@@ -73,7 +78,44 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 		//newObjectParams.m_ID = *m_currentSelection;
 		ObjectHandler::Instance().objectHistory.push(newObjectParams);
 	}
+}
 
+BOOL EditDialogue::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_CHAR)
+	{
+		const int controls[] = {
+			IDC_EDIT_X_POSITION, IDC_EDIT_Y_POSITION, IDC_EDIT_Z_POSITION,
+			IDC_EDIT_X_SCALE, IDC_EDIT_Y_SCALE, IDC_EDIT_Z_SCALE,
+			IDC_EDIT_X_ROTATION, IDC_EDIT_Y_ROTATION, IDC_EDIT_Z_ROTATION
+		};
+		for (int id : controls)
+		{
+			if (pMsg->hwnd == GetDlgItem(id)->m_hWnd)
+			{
+				if (!(isdigit(pMsg->wParam) || pMsg->wParam == VK_BACK ||
+					pMsg->wParam == '+' || pMsg->wParam == '-' || pMsg->wParam == '.' ||
+					pMsg->wParam == VK_DELETE))
+				{
+					return TRUE; // Stop processing this message (ignore input)
+				}
+			}
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+void EditDialogue::OnKillfocusEdit(CEdit& controlEdit)
+{
+	UpdateData(TRUE); // Update variables bound to controls
+	CString strValue;
+	controlEdit.GetWindowText(strValue);
+	if (!IsValidFloat(strValue))
+	{
+		AfxMessageBox(_T("Enter a valid floating point number!"));
+		controlEdit.SetFocus(); // Set focus back to the control
+	}
 }
 
 
@@ -129,4 +171,10 @@ void EditDialogue::OnClose()
 {
 	CDialogEx::OnCancel();
 	End();
+}
+
+bool EditDialogue::IsValidFloat(const CString& strInput)
+{
+	std::wregex regPattern(L"^[-+]?[0-9]*\\.?[0-9]+$"); // Regex for floating-point numbers
+	return std::regex_match(static_cast<LPCTSTR>(strInput), regPattern);
 }
