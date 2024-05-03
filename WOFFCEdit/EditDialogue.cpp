@@ -39,7 +39,7 @@ EditDialogue::~EditDialogue()
 }
 
 ///pass through pointers to the data in the tool we want to manipulate
-void EditDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int* selection)
+void EditDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int selection)
 {
 	m_sceneGraph = SceneGraph;
 	m_currentSelection = selection;
@@ -71,7 +71,7 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_Y_ROTATION, newObjectParams.m_orientation.y);
 	DDX_Text(pDX, IDC_EDIT_Z_ROTATION, newObjectParams.m_orientation.z);
 
-	newObjectParams.m_ID = *m_currentSelection;
+	newObjectParams.m_ID = m_currentSelection;
 	if (ObjectHandler::Instance().objectHistory.empty())
 	{
 		//Set the initial value of the object before editing.

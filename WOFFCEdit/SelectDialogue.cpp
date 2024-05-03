@@ -36,10 +36,10 @@ SelectDialogue::~SelectDialogue()
 }
 
 ///pass through pointers to the data in the tool we want to manipulate
-void SelectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int* selection)
+void SelectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int selection)
 {
 	m_sceneGraph = SceneGraph;
-	m_currentSelection = selection;
+	m_currentSelection = &selection;
 
 	//roll through all the objects in the scene graph and put an entry for each in the listbox
 	int numSceneObjects = m_sceneGraph->size();
@@ -87,15 +87,21 @@ void SelectDialogue::Select()
 	*m_currentSelection = _ttoi(currentSelectionValue);
 
 	// If something is already selected
-	if (ObjectHandler::Instance().selectedId != -1)
+	if (!ObjectHandler::Instance().selectedObjects.empty())
 	{
 		//Then removed that texture
-		ObjectHandler::Instance().RemoveTextureChange(ObjectHandler::Instance().selectedId);
+		ObjectHandler::Instance().RemoveAllTextureChanges();
 	}
 
+
+	if (std::find(ObjectHandler::Instance().selectedObjects.begin(), ObjectHandler::Instance().selectedObjects.end(),
+	              *m_currentSelection) != ObjectHandler::Instance().selectedObjects.end())
+	{
+		return;
+	}
 	//And set a new selection and then add a selected texture to it.
-	ObjectHandler::Instance().selectedId = *m_currentSelection;
-	ObjectHandler::Instance().TextureChange();
+	ObjectHandler::Instance().selectedObjects.push_back(*m_currentSelection);
+	ObjectHandler::Instance().MultiTextureChange();
 }
 
 BOOL SelectDialogue::OnInitDialog()

@@ -16,7 +16,7 @@ public: //methods
 	~ToolMain();
 
 	//onAction - These are the interface to MFC
-	int getCurrentSelectionID();
+	std::vector<int>* getCurrentSelectionIDs();
 	//returns the selection number of currently selected object so that It can be displayed.
 	void onActionInitialise(HWND handle, int width, int height);
 	//Passes through handle and hieght and width and initialises DirectX renderer and SQL LITE
@@ -32,7 +32,7 @@ public: //variables
 	std::vector<SceneObject> m_sceneGraph; //our scenegraph storing all the objects in the current chunk
 	InputCommands m_toolInputCommands; //input commands that we want to use and possibly pass over to the renderer
 	ChunkObject m_chunk; //our landscape chunk
-	int m_selectedObject; //ID of current Selection
+	std::vector<int>* m_selectedObject; //ID of current Selection
 
 private: //methods
 	void onContentAdded();

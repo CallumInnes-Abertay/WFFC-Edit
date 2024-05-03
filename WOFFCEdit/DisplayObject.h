@@ -8,6 +8,11 @@ public:
 	DisplayObject();
 	~DisplayObject();
 
+	bool operator==(const DisplayObject& other) const
+	{
+		return m_ID == other.m_ID;
+	}
+
 	std::shared_ptr<DirectX::Model> m_model; //main Mesh
 	ID3D11ShaderResourceView* m_texture_diffuse; //diffuse texture
 

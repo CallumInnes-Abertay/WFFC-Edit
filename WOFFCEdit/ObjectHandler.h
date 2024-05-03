@@ -31,15 +31,17 @@ public:
 	void TextureChange();
 	void MultiTextureChange();
 	void RemoveTextureChange(int idToRemove);
+	void RemoveAllTextureChanges();
 
 	DisplayObject GetDisplayObject();
 	void SetDisplayObject(const DisplayObject& newObjectParams);
 	void RollBackChanges();
 	void SpawnObject();
 
+	void DeleteObjects();
+
 
 	bool isEditing = false;
-	int selectedId;
 	std::vector<int> selectedObjects;
 	std::stack<DisplayObject> objectHistory;
 

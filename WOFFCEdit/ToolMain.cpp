@@ -10,7 +10,7 @@
 ToolMain::ToolMain()
 {
 	m_currentChunk = 0; //default value
-	m_selectedObject = 0; //initial selection ID
+	//m_selectedObject = 0; //initial selection ID
 	m_sceneGraph.clear(); //clear the vector for the scenegraph
 	m_databaseConnection = nullptr;
 
@@ -30,7 +30,7 @@ ToolMain::~ToolMain()
 }
 
 
-int ToolMain::getCurrentSelectionID()
+std::vector<int>* ToolMain::getCurrentSelectionIDs()
 {
 	return m_selectedObject;
 }
@@ -379,7 +379,17 @@ void ToolMain::UpdateInput(const MSG* msg)
 
 	if (m_toolInputCommands.LMB)
 	{
-		m_selectedObject = m_d3dRenderer.MousePicking();
+		if (!ObjectHandler::Instance().isEditing)
+		{
+			if (!m_toolInputCommands.shiftDown)
+			{
+				ObjectHandler::Instance().selectedObjects.clear();
+				ObjectHandler::Instance().RemoveAllTextureChanges();
+			}
+
+			m_d3dRenderer.MousePicking();
+			m_selectedObject = &ObjectHandler::Instance().selectedObjects;
+		}
 		m_toolInputCommands.LMB = false;
 	}
 
@@ -387,22 +397,27 @@ void ToolMain::UpdateInput(const MSG* msg)
 	if (m_keyArray[16])
 	{
 		m_toolInputCommands.shiftDown = true;
-		m_keyArray[16] = false;
 	}
 	else m_toolInputCommands.shiftDown = false;
 
 	if (m_keyArray['K'])
 	{
-		m_keyArray['K'] = false;
 		ObjectHandler::Instance().SpawnObject();
+		m_keyArray['K'] = false;
+	}
+
+	if (m_keyArray['M'])
+	{
+		ObjectHandler::Instance().DeleteObjects();
+		m_keyArray['M'] = false;
 	}
 
 	//If "left control" pressed using code.
 	if (m_keyArray[17])
 	{
 		m_toolInputCommands.controlDown = true;
-		m_keyArray[17] = false;
 		ObjectHandler::Instance().RollBackChanges();
+		m_keyArray[17] = false;
 	}
 	else m_toolInputCommands.controlDown = false;
 }

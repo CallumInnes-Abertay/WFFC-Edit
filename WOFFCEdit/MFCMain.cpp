@@ -1,4 +1,6 @@
 #include "MFCMain.h"
+
+
 #include "resource.h"
 #include "ObjectHandler.h"
 
@@ -74,8 +76,13 @@ int MFCMain::Run()
 		}
 		else
 		{
-			int ID = m_ToolSystem.getCurrentSelectionID();
-			std::wstring statusString = L"Selected Object: " + std::to_wstring(ID);
+			std::vector<int>* selectedObjects = m_ToolSystem.getCurrentSelectionIDs();
+			std::wstring selectedObjectsString;
+			if (selectedObjects != nullptr)
+				selectedObjectsString = VectorToWideString(*selectedObjects);
+			else
+				selectedObjectsString = std::wstring(L"The selected objects are");
+			std::wstring statusString = selectedObjectsString;
 			m_ToolSystem.Tick(&msg);
 
 			//send current object ID to status bar in The main frame
@@ -105,12 +112,27 @@ void MFCMain::MenuEditSelect()
 	//modeless dialogue must be declared in the class.   If we do local it will go out of scope instantly and destroy itself
 	m_ToolSelectDialogue.Create(IDD_DIALOG1); //Start up modeless
 	m_ToolSelectDialogue.ShowWindow(SW_SHOW); //show modeless
-	m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
+	if (m_ToolSystem.m_selectedObject != nullptr)
+	{
+		m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, ((*m_ToolSystem.m_selectedObject)[0]));
+	}
+	else
+	{
+		m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, -1);
+	}
 }
 
 void MFCMain::MenuEditEdit()
 {
-	m_ToolEditDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, &m_ToolSystem.m_selectedObject);
+	if (m_ToolSystem.m_selectedObject != nullptr)
+	{
+		m_ToolEditDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, ((*m_ToolSystem.m_selectedObject)[0]));
+	}
+	else
+	{
+		m_ToolEditDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, -1);
+	}
+
 	m_ToolEditDialogue.Create(IDD_EDIT_DIALOG); //Start up modeless
 	m_ToolEditDialogue.ShowWindow(SW_SHOW); //show modeless
 }
@@ -118,6 +140,24 @@ void MFCMain::MenuEditEdit()
 void MFCMain::ToolBarButton1()
 {
 	m_ToolSystem.onActionSave();
+}
+
+std::wstring MFCMain::VectorToWideString(const std::vector<int>& vec)
+{
+	std::wstringstream ss;
+	ss << L"The selected objects are:";
+
+	// Iterate over the vector
+	for (size_t i = 0; i < vec.size(); ++i)
+	{
+		ss << vec[i]; // Add the current integer to the wstringstream
+		if (i < vec.size() - 1)
+		{
+			ss << L","; // Add a comma if it's not the last element
+		}
+	}
+
+	return ss.str(); // Convert wstringstream to wstring and return
 }
 
 

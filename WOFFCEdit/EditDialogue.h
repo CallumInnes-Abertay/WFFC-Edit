@@ -22,7 +22,7 @@ public:
 	// modal // takes in out scenegraph in the constructor
 	EditDialogue(CWnd* pParent = nullptr);
 	~EditDialogue() override;
-	void SetObjectData(std::vector<SceneObject>* SceneGraph, int* Selection);
+	void SetObjectData(std::vector<SceneObject>* SceneGraph, int Selection);
 	//passing in pointers to the data the class will operate on.
 
 	// Dialog Data
@@ -37,7 +37,7 @@ protected:
 	afx_msg void End(); //kill the dialogue
 
 	std::vector<SceneObject>* m_sceneGraph;
-	int* m_currentSelection;
+	int m_currentSelection;
 
 	DisplayObject newObjectParams;
 

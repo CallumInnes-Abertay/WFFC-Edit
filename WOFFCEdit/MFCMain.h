@@ -1,17 +1,16 @@
 #pragma once
 
 #include <afxwin.h>
-#include <afxext.h>
 #include <afx.h>
+#include <sstream>
+
 
 #include "EditDialogue.h"
 #include "pch.h"
 #include "Game.h"
 #include "ToolMain.h"
-#include "resource.h"
 #include "MFCFrame.h"
 #include "SelectDialogue.h"
-
 
 class MFCMain : public CWinApp
 {
@@ -40,6 +39,8 @@ private:
 	afx_msg void MenuEditEdit();
 
 	afx_msg void ToolBarButton1();
+
+	std::wstring VectorToWideString(const std::vector<int>& vec);
 
 
 	DECLARE_MESSAGE_MAP() // required macro for message map functionality  One per class

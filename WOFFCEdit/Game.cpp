@@ -163,15 +163,7 @@ void Game::Update(const DX::StepTimer& timer) const
 
 int Game::MousePicking()
 {
-	int selectedID;
-	if (ObjectHandler::Instance().selectedId != -1 && ObjectHandler::Instance().isEditing)
-	{
-		selectedID = ObjectHandler::Instance().selectedId;
-	}
-	else
-	{
-		selectedID = -1;
-	}
+	int selectedID = -1;
 	float pickedDistance = 0;
 	float closestDistance = 200;
 
@@ -214,89 +206,47 @@ int Game::MousePicking()
 		XMVECTOR pickingVector = farPoint - nearPoint;
 		pickingVector = XMVector3Normalize(pickingVector);
 		// TODO Merge select systems to use just one method, possibly by clearing the vector each time, unless shift is held.
-		// SINGLE SELECT
-		if (!m_InputCommands.shiftDown)
+		//loop through mesh list for object
+		for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
 		{
-			// If we're in single selection we should now clear the selected object vector since none are being multi selected anymore.
-			ObjectHandler::Instance().selectedObjects.clear();
-			//loop through mesh list for object
-			for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
+			//checking for ray intersection
+			if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
+				nearPoint, pickingVector, pickedDistance))
 			{
-				//checking for ray intersection
-				if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
-					nearPoint, pickingVector, pickedDistance))
+				//If the object is closer to the picked distance
+				if (pickedDistance <= closestDistance)
 				{
-					//If the object is closer to the picked distance
-					if (pickedDistance <= closestDistance)
+					closestDistance = pickedDistance;
+					selectedID = i;
+
+					//Check if an object has already been selected, if so remove it from the list (assuming the vector already has values)
+					bool wasDuplicated = false;
+					if (!ObjectHandler::Instance().selectedObjects.empty())
 					{
-						closestDistance = pickedDistance;
-						selectedID = i;
+						wasDuplicated = RemoveIntFromVector(ObjectHandler::Instance().selectedObjects, i);
 					}
-				}
-			}
-			if (selectedID != -1)
-			{
-				ObjectHandler::Instance().selectedId = selectedID;
-				// Change the selected object appropriately by changing texture.
-				ObjectHandler::Instance().TextureChange();
-			}
-			else
-			{
-				ObjectHandler::Instance().RemoveTextureChange(ObjectHandler::Instance().selectedId);
-				ObjectHandler::Instance().selectedId = -1;
-			}
-		}
-		//MULTI SELECT
-		else
-		{
-			//loop through mesh list for object
-			for (int y = 0; y < m_displayList[i].m_model.get()->meshes.size(); y++)
-			{
-				//checking for ray intersection
-				if (m_displayList[i].m_model.get()->meshes[y]->boundingBox.Intersects(
-					nearPoint, pickingVector, pickedDistance))
-				{
-					//If the object is closer to the picked distance
-					if (pickedDistance <= closestDistance)
+					// If the selected object wasn't already in the vector, then add it and change the texture appropriately.
+					if (selectedID != -1 && !wasDuplicated)
 					{
-						closestDistance = pickedDistance;
-						selectedID = i;
+						ObjectHandler::Instance().selectedObjects.push_back(selectedID);
 
-						// If an object is already selected.
-						if (ObjectHandler::Instance().selectedId != -1)
-						{
-							// Then now consider it part of the multi selection
-							ObjectHandler::Instance().selectedObjects.push_back(ObjectHandler::Instance().selectedId);
-							ObjectHandler::Instance().selectedId = -1;
-						}
-
-						//Check if an object has already been selected, if so remove it from the list (assuming the vector already has values)
-						bool wasDuplicated = false;
-						if (!ObjectHandler::Instance().selectedObjects.empty())
-						{
-							wasDuplicated = RemoveIntFromVector(ObjectHandler::Instance().selectedObjects, i);
-						}
-						// If the selected object wasn't already in the vector, then add it and change the texture appropriately.
-						if (selectedID != -1 && !wasDuplicated)
-						{
-							ObjectHandler::Instance().selectedObjects.push_back(selectedID);
-
-							ObjectHandler::Instance().MultiTextureChange();
-						}
-						//If it was, then it's already removed, and thus should have a deselected texture.
-						else if (selectedID != -1 && wasDuplicated)
-						{
-							ObjectHandler::Instance().RemoveTextureChange(i);
-						}
+						ObjectHandler::Instance().MultiTextureChange();
+						return selectedID;
+					}
+					//If it was, then it's already removed, and thus should have a deselected texture.
+					if (selectedID != -1 && wasDuplicated)
+					{
+						ObjectHandler::Instance().RemoveTextureChange(i);
 					}
 				}
 			}
 		}
 	}
 
-	//if we got a hit.  return it.  
 	return selectedID;
 }
+
+//if we got a hit.  return it.  
 
 
 #pragma region Frame Render
@@ -546,7 +496,7 @@ void Game::BuildDisplayList(std::vector<SceneObject>* SceneGraph)
 		newDisplayObject.m_light_constant = SceneGraph->at(i).light_constant;
 		newDisplayObject.m_light_linear = SceneGraph->at(i).light_linear;
 		newDisplayObject.m_light_quadratic = SceneGraph->at(i).light_quadratic;
-
+		newDisplayObject.m_ID = i;
 		m_displayList.push_back(newDisplayObject);
 	}
 }
