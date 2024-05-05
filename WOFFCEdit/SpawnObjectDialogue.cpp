@@ -1,7 +1,7 @@
-﻿// EditDialogue.cpp : implementation file
+// EditDialogue.cpp : implementation file
 //
 
-#include "EditDialogue.h"
+#include "SpawnObjectDialogue.h"
 
 #include <regex>
 
@@ -12,47 +12,39 @@
 
 // EditDialogue dialog
 
-IMPLEMENT_DYNAMIC(EditDialogue, CDialogEx)
+IMPLEMENT_DYNAMIC(SpawnObjectDialogue, CDialogEx)
 
 //Message map.  Just like MFCMAIN.cpp.  This is where we catch button presses etc and point them to a handy dandy method.
-BEGIN_MESSAGE_MAP(EditDialogue, CDialogEx)
-	ON_WM_CLOSE(&EditDialogue::End)
-	ON_COMMAND(IDOK, &EditDialogue::End) //ok button
-	ON_BN_CLICKED(IDOK, &EditDialogue::OnBnClickedOk)
-	ON_BN_CLICKED(ID_BUTTON_APPLY, &EditDialogue::OnBnClickedButtonApply)
+BEGIN_MESSAGE_MAP(SpawnObjectDialogue, CDialogEx)
+	ON_WM_CLOSE(&SpawnObjectDialogue::End)
+	ON_COMMAND(IDOK, &SpawnObjectDialogue::End) //ok button
+	ON_BN_CLICKED(IDOK, &SpawnObjectDialogue::OnBnClickedOk)
+	ON_BN_CLICKED(ID_BUTTON_SPAWN_OBJECT, &SpawnObjectDialogue::OnBnClickedButtonSpawnObject)
 END_MESSAGE_MAP()
 
 
-EditDialogue::EditDialogue(CWnd* pParent, std::vector<SceneObject>* SceneGraph) //constructor used in modal
-	: CDialogEx(IDD_EDIT_DIALOG, pParent)
-{
-	m_sceneGraph = SceneGraph;
-}
-
-EditDialogue::EditDialogue(CWnd* pParent) //constructor used in modeless
+SpawnObjectDialogue::SpawnObjectDialogue(CWnd* pParent, std::vector<SceneObject>* SceneGraph)
+//constructor used in modal
 	: CDialogEx(IDD_EDIT_DIALOG, pParent)
 {
 }
 
-EditDialogue::~EditDialogue()
+SpawnObjectDialogue::SpawnObjectDialogue(CWnd* pParent) //constructor used in modeless
+	: CDialogEx(IDD_EDIT_DIALOG, pParent)
 {
 }
 
-///pass through pointers to the data in the tool we want to manipulate
-void EditDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int selection)
+SpawnObjectDialogue::~SpawnObjectDialogue()
 {
-	m_sceneGraph = SceneGraph;
-	m_currentSelection = selection;
 }
 
 
-void EditDialogue::DoDataExchange(CDataExchange* pDX)
+void SpawnObjectDialogue::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	if (ObjectHandler::IsInstanceMade())
 	{
 		ObjectHandler::Instance().m_isEditing = true;
-		newObjectParams = ObjectHandler::Instance().GetDisplayObject();
 	}
 
 	//Set position
@@ -70,17 +62,9 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_X_ROTATION, newObjectParams.m_orientation.x);
 	DDX_Text(pDX, IDC_EDIT_Y_ROTATION, newObjectParams.m_orientation.y);
 	DDX_Text(pDX, IDC_EDIT_Z_ROTATION, newObjectParams.m_orientation.z);
-
-	newObjectParams.m_ID = m_currentSelection;
-	if (ObjectHandler::Instance().m_objectHistory.empty())
-	{
-		//Set the initial value of the object before editing.
-		//newObjectParams.m_ID = *m_currentSelection;
-		ObjectHandler::Instance().m_objectHistory.push(newObjectParams);
-	}
 }
 
-BOOL EditDialogue::PreTranslateMessage(MSG* pMsg)
+BOOL SpawnObjectDialogue::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_CHAR)
 	{
@@ -106,7 +90,7 @@ BOOL EditDialogue::PreTranslateMessage(MSG* pMsg)
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
-void EditDialogue::OnKillfocusEdit(CEdit& controlEdit)
+void SpawnObjectDialogue::OnKillfocusEdit(CEdit& controlEdit)
 {
 	UpdateData(TRUE); // Update variables bound to controls
 	CString strValue;
@@ -119,14 +103,14 @@ void EditDialogue::OnKillfocusEdit(CEdit& controlEdit)
 }
 
 
-void EditDialogue::End()
+void SpawnObjectDialogue::End()
 {
 	ObjectHandler::Instance().m_isEditing = false;
 	DestroyWindow();
 	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
 }
 
-BOOL EditDialogue::OnInitDialog()
+BOOL SpawnObjectDialogue::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -144,36 +128,35 @@ BOOL EditDialogue::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void EditDialogue::PostNcDestroy()
+void SpawnObjectDialogue::PostNcDestroy()
 {
 }
 
-void EditDialogue::OnBnClickedOk()
+void SpawnObjectDialogue::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
 }
 
 
-void EditDialogue::OnBnClickedButtonApply()
+void SpawnObjectDialogue::OnBnClickedButtonSpawnObject()
 {
 	// TODO: Add your control notification handler code here
 
 	UpdateData(TRUE);
 	if (ObjectHandler::IsInstanceMade())
 	{
-		ObjectHandler::Instance().SetDisplayObject(newObjectParams);
+		ObjectHandler::Instance().SpawnObject(newObjectParams);
 	}
-	ObjectHandler::Instance().m_objectHistory.push(newObjectParams);
 }
 
-void EditDialogue::OnClose()
+void SpawnObjectDialogue::OnClose()
 {
 	CDialogEx::OnCancel();
 	End();
 }
 
-bool EditDialogue::IsValidFloat(const CString& strInput)
+bool SpawnObjectDialogue::IsValidFloat(const CString& strInput)
 {
 	std::wregex regPattern(L"^[-+]?[0-9]*\\.?[0-9]+$"); // Regex for floating-point numbers
 	return std::regex_match(static_cast<LPCTSTR>(strInput), regPattern);

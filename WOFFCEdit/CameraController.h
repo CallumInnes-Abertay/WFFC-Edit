@@ -12,6 +12,8 @@ class CameraController
 public:
 	CameraController();
 	void Update(const InputCommands& input_commands);
+	void FocusCamera(const Vector3& targetPosition);
+	void LookAt(const Vector3& target);
 
 protected:
 	void Init();

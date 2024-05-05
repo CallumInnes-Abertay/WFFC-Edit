@@ -135,3 +135,28 @@ void CameraController::HandleMouse(const InputCommands& input_commands)
 
 	m_oldMouse = m_newMouse;
 }
+
+void CameraController::FocusCamera(const Vector3& targetPosition)
+{
+	// Move the camera to look down on and to the side of the object
+	m_camPosition.x = targetPosition.x;
+	m_camPosition.y = targetPosition.y + 1;
+	m_camPosition.z = targetPosition.z - 3;
+
+	// Then change rotation
+	LookAt(targetPosition);
+}
+
+void CameraController::LookAt(const Vector3& target)
+{
+	float dx = target.x - m_camPosition.x;
+	float dy = target.y - m_camPosition.y;
+	float dz = target.z - m_camPosition.z;
+
+	// Calculate yaw 
+	m_camOrientation.y = atan2(dx, dz) * (180.0f / 3.1415);
+
+	// Calculate pitch 
+	const float distance = sqrt(dx * dx + dz * dz);
+	m_camOrientation.x = -atan2(dy, distance) * (180.0f / 3.1415);
+}

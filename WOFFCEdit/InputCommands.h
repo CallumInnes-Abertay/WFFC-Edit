@@ -21,4 +21,9 @@ struct InputCommands
 	//Non Camera Controls
 	bool shiftDown;
 	bool controlDown;
+
+	bool upArrowDown;
+	bool downArrowDown;
+	bool leftArrowDown;
+	bool rightArrowDown;
 };

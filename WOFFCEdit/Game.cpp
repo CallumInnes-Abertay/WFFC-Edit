@@ -221,14 +221,14 @@ int Game::MousePicking()
 
 					//Check if an object has already been selected, if so remove it from the list (assuming the vector already has values)
 					bool wasDuplicated = false;
-					if (!ObjectHandler::Instance().selectedObjects.empty())
+					if (!ObjectHandler::Instance().m_selectedObjects.empty())
 					{
-						wasDuplicated = RemoveIntFromVector(ObjectHandler::Instance().selectedObjects, i);
+						wasDuplicated = RemoveIntFromVector(ObjectHandler::Instance().m_selectedObjects, i);
 					}
 					// If the selected object wasn't already in the vector, then add it and change the texture appropriately.
 					if (selectedID != -1 && !wasDuplicated)
 					{
-						ObjectHandler::Instance().selectedObjects.push_back(selectedID);
+						ObjectHandler::Instance().m_selectedObjects.push_back(selectedID);
 
 						ObjectHandler::Instance().MultiTextureChange();
 						return selectedID;
@@ -243,10 +243,44 @@ int Game::MousePicking()
 		}
 	}
 
+	//if we got a hit.  return it.  
 	return selectedID;
 }
 
-//if we got a hit.  return it.  
+
+void Game::SpawnObject()
+{
+	DisplayObject objectToSpawn;
+	//objectToSpawn.m_model = m_model;
+	CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"database/data/placeholder.dds",
+	                         nullptr, &objectToSpawn.m_texture_diffuse);
+	objectToSpawn.m_model->UpdateEffects([&](IEffect* effect)
+	{
+		const auto basic_effect = dynamic_cast<BasicEffect*>(effect);
+		if (basic_effect)
+		{
+			basic_effect->SetTexture(objectToSpawn.m_texture_diffuse);
+		}
+	});
+	objectToSpawn.m_texture_diffuse = m_displayList[0].m_texture_diffuse;
+
+
+	objectToSpawn.m_position = Vector3(2, 2, 4);
+	objectToSpawn.m_scale = Vector3(1, 1, 1);
+	objectToSpawn.m_orientation = Vector3(0, 0, 0);
+
+
+	m_displayList.push_back(objectToSpawn);
+	for (int i = 0; i < m_displayList.size(); i++)
+	{
+		m_displayList[i].m_ID = i;
+	}
+}
+
+void Game::FocusOnObject()
+{
+	m_camera->FocusCamera(ObjectHandler::Instance().GetDisplayObject().m_position);
+}
 
 
 #pragma region Frame Render
@@ -274,8 +308,9 @@ void Game::Render()
 	//CAMERA POSITION ON HUD
 	m_sprites->Begin();
 	WCHAR Buffer[256];
-	std::wstring var = L"Cam X: " + std::to_wstring(m_camera->GetPosition().x) + L"Cam Z: " + std::to_wstring(
-		m_camera->GetPosition().z);
+	std::wstring var = L"Cam X: " + std::to_wstring(m_camera->GetPosition().x) + +L"|Cam Y: " +
+		std::to_wstring(m_camera->GetPosition().y) + L"|Cam Z: " + std::to_wstring(
+			m_camera->GetPosition().z);
 	m_font->DrawString(m_sprites.get(), var.c_str(), XMFLOAT2(100, 10), Colors::Yellow);
 	m_sprites->End();
 

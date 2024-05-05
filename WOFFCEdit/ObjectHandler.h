@@ -16,7 +16,7 @@ public:
 	{
 		static ObjectHandler instance; // Guaranteed to be destroyed.
 		// Instantiated on first use.
-		isInstanceMade = true;
+		m_isInstanceMade = true;
 		return instance;
 	}
 
@@ -26,9 +26,8 @@ public:
 	void Initialise(std::vector<DisplayObject>* startingObjects,
 	                const std::shared_ptr<DX::DeviceResources>& device_resources);
 	void Update(const InputCommands& input_commands);
-	static bool IsInstanceMade() { return isInstanceMade; }
+	static bool IsInstanceMade() { return m_isInstanceMade; }
 
-	void TextureChange();
 	void MultiTextureChange();
 	void RemoveTextureChange(int idToRemove);
 	void RemoveAllTextureChanges();
@@ -37,21 +36,28 @@ public:
 	void SetDisplayObject(const DisplayObject& newObjectParams);
 	void RollBackChanges();
 	void SpawnObject();
+	void SpawnObject(DisplayObject objectToSpawn);
+
 
 	void DeleteObjects();
+	void Copy();
+	void Paste();
 
 
-	bool isEditing = false;
-	std::vector<int> selectedObjects;
-	std::stack<DisplayObject> objectHistory;
+	bool m_isEditing = false;
+	std::vector<int> m_selectedObjects;
+	std::stack<DisplayObject> m_objectHistory;
 
 protected:
 	ObjectHandler();
 
 private:
-	std::vector<DisplayObject>* allDisplayObjects;
+	std::vector<DisplayObject>* m_allDisplayObjects;
+
+	//Seperate vector to selected objects so users can still select without worrying about messing with their copied objects.
+	std::vector<DisplayObject> m_objectsToCopy;
 	std::shared_ptr<DX::DeviceResources> m_device_resource;
-	static bool isInstanceMade;
+	static bool m_isInstanceMade;
 };
 
 // Implementations

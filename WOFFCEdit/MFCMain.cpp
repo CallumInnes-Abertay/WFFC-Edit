@@ -10,6 +10,7 @@ BEGIN_MESSAGE_MAP(MFCMain, CWinApp)
 	ON_COMMAND(ID_FILE_SAVETERRAIN, &MFCMain::MenuFileSaveTerrain)
 	ON_COMMAND(ID_EDIT_SELECT, &MFCMain::MenuEditSelect)
 	ON_COMMAND(ID_EDIT_EDIT, &MFCMain::MenuEditEdit)
+	ON_COMMAND(ID_EDIT_SPAWNOBJECT, &MFCMain::MenuEditSpawnObject)
 	ON_COMMAND(ID_BUTTON40001, &MFCMain::ToolBarButton1)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_TOOL, &CMyFrame::OnUpdatePage)
 END_MESSAGE_MAP()
@@ -68,10 +69,6 @@ int MFCMain::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			/*		if (!ObjectHandler::Instance().isEditing)
-					{
-						m_ToolSystem.m_toolInputCommands.LMB = false;
-					}*/
 			m_ToolSystem.UpdateInput(&msg);
 		}
 		else
@@ -104,13 +101,15 @@ void MFCMain::MenuFileSaveTerrain()
 	m_ToolSystem.onActionSaveTerrain();
 }
 
+
+//Set up the spawn dialog
 void MFCMain::MenuEditSelect()
 {
 	//SelectDialogue m_ToolSelectDialogue(NULL, &m_ToolSystem.m_sceneGraph);		//create our dialoguebox //modal constructor
 	//m_ToolSelectDialogue.DoModal();	// start it up modal
 
 	//modeless dialogue must be declared in the class.   If we do local it will go out of scope instantly and destroy itself
-	m_ToolSelectDialogue.Create(IDD_DIALOG1); //Start up modeless
+	m_ToolSelectDialogue.Create(IDD_SELECT_DIALOG); //Start up modeless
 	m_ToolSelectDialogue.ShowWindow(SW_SHOW); //show modeless
 	if (m_ToolSystem.m_selectedObject != nullptr)
 	{
@@ -122,6 +121,7 @@ void MFCMain::MenuEditSelect()
 	}
 }
 
+//Set up the edit dialog
 void MFCMain::MenuEditEdit()
 {
 	if (m_ToolSystem.m_selectedObject != nullptr)
@@ -137,6 +137,13 @@ void MFCMain::MenuEditEdit()
 	m_ToolEditDialogue.ShowWindow(SW_SHOW); //show modeless
 }
 
+//Set up the spawn object dialog
+void MFCMain::MenuEditSpawnObject()
+{
+	m_ToolSpawnObjectDialogue.Create(IDD_SPAWN_OBJECT_DIALOG); //Start up modeless
+	m_ToolSpawnObjectDialogue.ShowWindow(SW_SHOW); //show modeless
+}
+
 void MFCMain::ToolBarButton1()
 {
 	m_ToolSystem.onActionSave();
@@ -150,14 +157,16 @@ std::wstring MFCMain::VectorToWideString(const std::vector<int>& vec)
 	// Iterate over the vector
 	for (size_t i = 0; i < vec.size(); ++i)
 	{
-		ss << vec[i]; // Add the current integer to the wstringstream
+		// Add the current id to the string
+		ss << vec[i];
+		// Add a comma if it's not the last element
 		if (i < vec.size() - 1)
 		{
-			ss << L","; // Add a comma if it's not the last element
+			ss << L",";
 		}
 	}
 
-	return ss.str(); // Convert wstringstream to wstring and return
+	return ss.str();
 }
 
 

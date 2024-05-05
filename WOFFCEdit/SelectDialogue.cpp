@@ -21,13 +21,13 @@ END_MESSAGE_MAP()
 
 
 SelectDialogue::SelectDialogue(CWnd* pParent, std::vector<SceneObject>* SceneGraph) //constructor used in modal
-	: CDialogEx(IDD_DIALOG1, pParent)
+	: CDialogEx(IDD_SELECT_DIALOG, pParent)
 {
 	m_sceneGraph = SceneGraph;
 }
 
 SelectDialogue::SelectDialogue(CWnd* pParent) //constructor used in modeless
-	: CDialogEx(IDD_DIALOG1, pParent)
+	: CDialogEx(IDD_SELECT_DIALOG, pParent)
 {
 }
 
@@ -69,7 +69,7 @@ void SelectDialogue::End()
 //	if (pMsg->message == WM_LBUTTONDOWN && // Check for left mouse button click
 //		GetDlgItem(IDCANCEL) == GetFocus())   // Check if close button has focus
 //	{#
-//		ObjectHandler::Instance().isEditing = false;
+//		ObjectHandler::Instance().m_isEditing = false;
 //		End();  // Call your End function to close the window and stop editing
 //		return TRUE;  // Message handled, don't call default processing
 //	}
@@ -87,27 +87,28 @@ void SelectDialogue::Select()
 	*m_currentSelection = _ttoi(currentSelectionValue);
 
 	// If something is already selected
-	if (!ObjectHandler::Instance().selectedObjects.empty())
+	if (!ObjectHandler::Instance().m_selectedObjects.empty())
 	{
 		//Then removed that texture
 		ObjectHandler::Instance().RemoveAllTextureChanges();
 	}
 
 
-	if (std::find(ObjectHandler::Instance().selectedObjects.begin(), ObjectHandler::Instance().selectedObjects.end(),
-	              *m_currentSelection) != ObjectHandler::Instance().selectedObjects.end())
+	if (std::find(ObjectHandler::Instance().m_selectedObjects.begin(),
+	              ObjectHandler::Instance().m_selectedObjects.end(),
+	              *m_currentSelection) != ObjectHandler::Instance().m_selectedObjects.end())
 	{
 		return;
 	}
 	//And set a new selection and then add a selected texture to it.
-	ObjectHandler::Instance().selectedObjects.push_back(*m_currentSelection);
+	ObjectHandler::Instance().m_selectedObjects.push_back(*m_currentSelection);
 	ObjectHandler::Instance().MultiTextureChange();
 }
 
 BOOL SelectDialogue::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	ObjectHandler::Instance().isEditing = true;
+	ObjectHandler::Instance().m_isEditing = true;
 
 
 	//uncomment for modal only
@@ -126,7 +127,7 @@ BOOL SelectDialogue::OnInitDialog()
 
 void SelectDialogue::PostNcDestroy()
 {
-	ObjectHandler::Instance().isEditing = false;
+	ObjectHandler::Instance().m_isEditing = false;
 }
 
 

@@ -5,12 +5,13 @@
 #include <sstream>
 
 
-#include "EditDialogue.h"
 #include "pch.h"
 #include "Game.h"
 #include "ToolMain.h"
 #include "MFCFrame.h"
 #include "SelectDialogue.h"
+#include "EditDialogue.h"
+#include "SpawnObjectDialogue.h"
 
 class MFCMain : public CWinApp
 {
@@ -27,6 +28,7 @@ private:
 	CRect WindowRECT; //Window area rectangle. 
 	SelectDialogue m_ToolSelectDialogue; //for modeless dialogue, declare it here
 	EditDialogue m_ToolEditDialogue; //for modeless dialogue, declare it here
+	SpawnObjectDialogue m_ToolSpawnObjectDialogue; //for modeless dialogue, declare it here
 
 
 	int m_width;
@@ -37,6 +39,8 @@ private:
 	afx_msg void MenuFileSaveTerrain();
 	afx_msg void MenuEditSelect();
 	afx_msg void MenuEditEdit();
+	afx_msg void MenuEditSpawnObject();
+
 
 	afx_msg void ToolBarButton1();
 

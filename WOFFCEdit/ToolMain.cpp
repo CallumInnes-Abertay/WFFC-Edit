@@ -376,19 +376,50 @@ void ToolMain::UpdateInput(const MSG* msg)
 		m_toolInputCommands.rotDown = true;
 	}
 	else m_toolInputCommands.rotDown = false;
+	if (!ObjectHandler::Instance().m_isEditing)
+	{
+		// left arrow Key
+		if (m_keyArray[37])
+		{
+			m_toolInputCommands.leftArrowDown = true;
+		}
+		else m_toolInputCommands.leftArrowDown = false;
+
+		//Up arrow
+		if (m_keyArray[38])
+		{
+			m_toolInputCommands.upArrowDown = true;
+		}
+		else m_toolInputCommands.upArrowDown = false;
+
+		//Right arrow
+		if (m_keyArray[39])
+		{
+			m_toolInputCommands.rightArrowDown = true;
+		}
+		else m_toolInputCommands.rightArrowDown = false;
+
+		//Down arrow key
+		if (m_keyArray[40])
+		{
+			m_toolInputCommands.downArrowDown = true;
+		}
+		else m_toolInputCommands.downArrowDown = false;
+	}
+
 
 	if (m_toolInputCommands.LMB)
 	{
-		if (!ObjectHandler::Instance().isEditing)
+		if (!ObjectHandler::Instance().m_isEditing)
 		{
 			if (!m_toolInputCommands.shiftDown)
 			{
-				ObjectHandler::Instance().selectedObjects.clear();
+				ObjectHandler::Instance().m_selectedObjects.clear();
 				ObjectHandler::Instance().RemoveAllTextureChanges();
 			}
 
 			m_d3dRenderer.MousePicking();
-			m_selectedObject = &ObjectHandler::Instance().selectedObjects;
+			m_selectedObject = &ObjectHandler::Instance().m_selectedObjects;
 		}
 		m_toolInputCommands.LMB = false;
 	}
@@ -400,24 +431,49 @@ void ToolMain::UpdateInput(const MSG* msg)
 	}
 	else m_toolInputCommands.shiftDown = false;
 
+	if (m_keyArray['F'])
+	{
+		m_keyArray['F'] = false;
+		m_d3dRenderer.FocusOnObject();
+	}
+
 	if (m_keyArray['K'])
 	{
 		ObjectHandler::Instance().SpawnObject();
 		m_keyArray['K'] = false;
 	}
 
-	if (m_keyArray['M'])
+	// If "delete" pressed using code.
+
+	if (m_keyArray[46])
 	{
 		ObjectHandler::Instance().DeleteObjects();
-		m_keyArray['M'] = false;
+		m_keyArray[46] = false;
 	}
+
 
 	//If "left control" pressed using code.
 	if (m_keyArray[17])
 	{
 		m_toolInputCommands.controlDown = true;
-		ObjectHandler::Instance().RollBackChanges();
-		m_keyArray[17] = false;
 	}
 	else m_toolInputCommands.controlDown = false;
+
+	if (m_keyArray['Z'] && m_toolInputCommands.controlDown)
+	{
+		m_keyArray['Z'] = false;
+		ObjectHandler::Instance().RollBackChanges();
+	}
+
+	if (m_keyArray['C'] && m_toolInputCommands.controlDown)
+	{
+		m_keyArray['C'] = false;
+		ObjectHandler::Instance().Copy();
+	}
+
+	if (m_keyArray['V'] && m_toolInputCommands.controlDown)
+	{
+		m_keyArray['V'] = false;
+		ObjectHandler::Instance().Paste();
+	}
 }
