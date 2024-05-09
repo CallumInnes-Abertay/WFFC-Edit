@@ -39,13 +39,18 @@ SpawnObjectDialogue::~SpawnObjectDialogue()
 }
 
 
+//Set the parameters made for spawning an object
 void SpawnObjectDialogue::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	if (ObjectHandler::IsInstanceMade())
 	{
+		//Dont allow further selection when editing
 		ObjectHandler::Instance().m_isEditing = true;
 	}
+
+	//Default scale to 1,1,1 (since a 0,0,0 scale doesn't make much sense for usability)
+	newObjectParams.m_scale = Vector3(1, 1, 1);
 
 	//Set position
 	DDX_Text(pDX, IDC_EDIT_X_POSITION, newObjectParams.m_position.x);
@@ -139,10 +144,9 @@ void SpawnObjectDialogue::OnBnClickedOk()
 }
 
 
+//If user click the spawn object button, spawn the object with the parameters relating to it
 void SpawnObjectDialogue::OnBnClickedButtonSpawnObject()
 {
-	// TODO: Add your control notification handler code here
-
 	UpdateData(TRUE);
 	if (ObjectHandler::IsInstanceMade())
 	{
@@ -156,6 +160,7 @@ void SpawnObjectDialogue::OnClose()
 	End();
 }
 
+//Regex to check if a float is valid or not.
 bool SpawnObjectDialogue::IsValidFloat(const CString& strInput)
 {
 	std::wregex regPattern(L"^[-+]?[0-9]*\\.?[0-9]+$"); // Regex for floating-point numbers

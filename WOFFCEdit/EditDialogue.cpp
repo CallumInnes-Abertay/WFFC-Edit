@@ -52,7 +52,7 @@ void EditDialogue::DoDataExchange(CDataExchange* pDX)
 	if (ObjectHandler::IsInstanceMade())
 	{
 		ObjectHandler::Instance().m_isEditing = true;
-		newObjectParams = ObjectHandler::Instance().GetDisplayObject();
+		newObjectParams = ObjectHandler::Instance().GetLastSelectedDisplayObject();
 	}
 
 	//Set position
@@ -155,6 +155,7 @@ void EditDialogue::OnBnClickedOk()
 }
 
 
+//When apply is clicked then update the selected object.
 void EditDialogue::OnBnClickedButtonApply()
 {
 	// TODO: Add your control notification handler code here
@@ -164,6 +165,7 @@ void EditDialogue::OnBnClickedButtonApply()
 	{
 		ObjectHandler::Instance().SetDisplayObject(newObjectParams);
 	}
+	//Then add it to a history of objects to allow undo.
 	ObjectHandler::Instance().m_objectHistory.push(newObjectParams);
 }
 

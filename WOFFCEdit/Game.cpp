@@ -165,6 +165,7 @@ int Game::MousePicking()
 {
 	int selectedID = -1;
 	float pickedDistance = 0;
+	//Handle 
 	float closestDistance = 200;
 
 	//setup near and far planes of frustum with mouse X and mouse y passed down from Toolmain. 
@@ -248,38 +249,11 @@ int Game::MousePicking()
 }
 
 
-void Game::SpawnObject()
-{
-	DisplayObject objectToSpawn;
-	//objectToSpawn.m_model = m_model;
-	CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"database/data/placeholder.dds",
-	                         nullptr, &objectToSpawn.m_texture_diffuse);
-	objectToSpawn.m_model->UpdateEffects([&](IEffect* effect)
-	{
-		const auto basic_effect = dynamic_cast<BasicEffect*>(effect);
-		if (basic_effect)
-		{
-			basic_effect->SetTexture(objectToSpawn.m_texture_diffuse);
-		}
-	});
-	objectToSpawn.m_texture_diffuse = m_displayList[0].m_texture_diffuse;
 
-
-	objectToSpawn.m_position = Vector3(2, 2, 4);
-	objectToSpawn.m_scale = Vector3(1, 1, 1);
-	objectToSpawn.m_orientation = Vector3(0, 0, 0);
-
-
-	m_displayList.push_back(objectToSpawn);
-	for (int i = 0; i < m_displayList.size(); i++)
-	{
-		m_displayList[i].m_ID = i;
-	}
-}
 
 void Game::FocusOnObject()
 {
-	m_camera->FocusCamera(ObjectHandler::Instance().GetDisplayObject().m_position);
+	m_camera->FocusCamera(ObjectHandler::Instance().GetLastSelectedDisplayObject().m_position);
 }
 
 
@@ -305,8 +279,8 @@ void Game::Render()
 		constexpr XMVECTORF32 yaxis = {0.f, 0.f, 512.f};
 		DrawGrid(xaxis, yaxis, g_XMZero, 512, 512, Colors::Gray);
 	}
-	//CAMERA POSITION ON HUD
 	m_sprites->Begin();
+	//CAMERA POSITION ON HUD (X,Y,Z coords)
 	WCHAR Buffer[256];
 	std::wstring var = L"Cam X: " + std::to_wstring(m_camera->GetPosition().x) + +L"|Cam Y: " +
 		std::to_wstring(m_camera->GetPosition().y) + L"|Cam Z: " + std::to_wstring(
@@ -531,6 +505,8 @@ void Game::BuildDisplayList(std::vector<SceneObject>* SceneGraph)
 		newDisplayObject.m_light_constant = SceneGraph->at(i).light_constant;
 		newDisplayObject.m_light_linear = SceneGraph->at(i).light_linear;
 		newDisplayObject.m_light_quadratic = SceneGraph->at(i).light_quadratic;
+
+		// Update
 		newDisplayObject.m_ID = i;
 		m_displayList.push_back(newDisplayObject);
 	}
@@ -680,6 +656,7 @@ std::wstring StringToWCHART(std::string s)
 }
 
 
+// Remove an int (selection id) from a vector, making sure to account for iterating over the vector.
 bool RemoveIntFromVector(std::vector<int>& vec, const int target)
 {
 	// Find the element

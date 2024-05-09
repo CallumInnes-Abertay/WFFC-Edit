@@ -8,9 +8,15 @@ public:
 	DisplayObject();
 	~DisplayObject();
 
+	//Creates a comparison operator that allows comparing 2 DisplayObject's through their ID.
 	bool operator==(const DisplayObject& other) const
 	{
 		return m_ID == other.m_ID;
+	}
+
+	bool operator==(const DisplayObject* other) const
+	{
+		return m_ID == other->m_ID;
 	}
 
 	std::shared_ptr<DirectX::Model> m_model; //main Mesh

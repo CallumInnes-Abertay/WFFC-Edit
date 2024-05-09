@@ -12,6 +12,7 @@ struct InputCommands
 	bool rotUp;
 	bool rotDown;
 
+	//Mouse Controls
 	float mouseX;
 	float mouseY;
 
@@ -22,6 +23,7 @@ struct InputCommands
 	bool shiftDown;
 	bool controlDown;
 
+	// Arrow key controls 
 	bool upArrowDown;
 	bool downArrowDown;
 	bool leftArrowDown;

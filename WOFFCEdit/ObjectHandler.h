@@ -32,9 +32,10 @@ public:
 	void RemoveTextureChange(int idToRemove);
 	void RemoveAllTextureChanges();
 
-	DisplayObject GetDisplayObject();
+	DisplayObject GetLastSelectedDisplayObject();
+	DisplayObject GetObject(int id);
 	void SetDisplayObject(const DisplayObject& newObjectParams);
-	void RollBackChanges();
+	void UndoChanges();
 	void SpawnObject();
 	void SpawnObject(DisplayObject objectToSpawn);
 

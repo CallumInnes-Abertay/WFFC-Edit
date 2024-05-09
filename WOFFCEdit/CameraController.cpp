@@ -6,8 +6,10 @@ CameraController::CameraController()
 	Init();
 }
 
+// Initalise camera settings
 void CameraController::Init()
 {
+	//Default values
 	m_moveSpeed = 0.30;
 	m_camRotRate = 3.0;
 
@@ -67,7 +69,7 @@ void CameraController::Update(const InputCommands& input_commands)
 	//create right vector from look Direction
 	m_camLookDirection.Cross(Vector3::UnitY, m_camRight);
 
-
+	// Update camera position based on input commands (basic WASD movement)
 	if (input_commands.forward)
 	{
 		m_camPosition += m_camLookDirection * m_moveSpeed;
@@ -95,15 +97,18 @@ void CameraController::HandleMouse(const InputCommands& input_commands)
 {
 	m_newMouse = Vector2(input_commands.mouseX, input_commands.mouseY);
 
+	//Only allow mouse movement if holding right mouse button
 	if (input_commands.RMB)
 	{
 		Vector2 Difference;
 
+		// Calculate mouse movement difference
 		Difference.x = m_newMouse.x - m_oldMouse.x;
 		Difference.y = m_newMouse.y - m_oldMouse.y;
 
 		Difference.Normalize();
 
+		// Adjust camera orientation based on mouse movement
 		if (Difference.x != 0 || Difference.y != 0)
 		{
 			// yaw
@@ -115,6 +120,7 @@ void CameraController::HandleMouse(const InputCommands& input_commands)
 		float cosR, cosP, cosY;
 		float sinR, sinP, sinY;
 
+		// Calculate new look direction based on Euler angles
 		cosP = cosf(m_camOrientation.x * (3.1415 / 180));
 		cosY = cosf(m_camOrientation.y * (3.1415 / 180));
 		cosR = cosf(m_camOrientation.z * (3.1415 / 180));
@@ -147,6 +153,7 @@ void CameraController::FocusCamera(const Vector3& targetPosition)
 	LookAt(targetPosition);
 }
 
+// Set camera orientation to look at a specific target (the object)
 void CameraController::LookAt(const Vector3& target)
 {
 	float dx = target.x - m_camPosition.x;

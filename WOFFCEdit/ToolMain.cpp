@@ -1,5 +1,4 @@
 #include "ToolMain.h"
-#include "resource.h"
 #include <vector>
 #include <sstream>
 
@@ -21,6 +20,9 @@ ToolMain::ToolMain()
 	m_toolInputCommands.right = false;
 
 	m_mousePos = LPPOINT();
+	//Get the address of the selected objects
+	m_selectedObject = &ObjectHandler::Instance().m_selectedObjects;
+
 }
 
 
@@ -407,19 +409,20 @@ void ToolMain::UpdateInput(const MSG* msg)
 		else m_toolInputCommands.downArrowDown = false;
 	}
 
-
+	//Selection if mouse button down
 	if (m_toolInputCommands.LMB)
 	{
 		if (!ObjectHandler::Instance().m_isEditing)
 		{
+			//If shift is not down then stop multi selection
 			if (!m_toolInputCommands.shiftDown)
 			{
 				ObjectHandler::Instance().m_selectedObjects.clear();
 				ObjectHandler::Instance().RemoveAllTextureChanges();
 			}
 
+			//Otherwise continue with multi selection
 			m_d3dRenderer.MousePicking();
-			m_selectedObject = &ObjectHandler::Instance().m_selectedObjects;
 		}
 		m_toolInputCommands.LMB = false;
 	}
@@ -431,49 +434,60 @@ void ToolMain::UpdateInput(const MSG* msg)
 	}
 	else m_toolInputCommands.shiftDown = false;
 
+	//If F is pressed
 	if (m_keyArray['F'])
 	{
-		m_keyArray['F'] = false;
+		//Then focus on an object
 		m_d3dRenderer.FocusOnObject();
+		m_keyArray['F'] = false;
 	}
 
+	//If K is pressed
 	if (m_keyArray['K'])
 	{
+		//Then spawn an object
 		ObjectHandler::Instance().SpawnObject();
 		m_keyArray['K'] = false;
 	}
 
 	// If "delete" pressed using code.
-
 	if (m_keyArray[46])
 	{
+		//Then delete the selected objects.
 		ObjectHandler::Instance().DeleteObjects();
 		m_keyArray[46] = false;
 	}
 
 
-	//If "left control" pressed using code.
+	//If "left control" pressed.
 	if (m_keyArray[17])
 	{
 		m_toolInputCommands.controlDown = true;
 	}
 	else m_toolInputCommands.controlDown = false;
 
+
+	//If Z and Control (Crtl + Z) is pressed then
 	if (m_keyArray['Z'] && m_toolInputCommands.controlDown)
 	{
 		m_keyArray['Z'] = false;
-		ObjectHandler::Instance().RollBackChanges();
+		//Run undo
+		ObjectHandler::Instance().UndoChanges();
 	}
 
+	//If C and Control (Crtl + C) is pressed then
 	if (m_keyArray['C'] && m_toolInputCommands.controlDown)
 	{
 		m_keyArray['C'] = false;
+		//Copy selected objects
 		ObjectHandler::Instance().Copy();
 	}
 
+	//If V and Control (Crtl + V) is pressed then
 	if (m_keyArray['V'] && m_toolInputCommands.controlDown)
 	{
 		m_keyArray['V'] = false;
+		//Paste previously copied objects
 		ObjectHandler::Instance().Paste();
 	}
 }
