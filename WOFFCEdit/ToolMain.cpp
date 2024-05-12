@@ -22,7 +22,6 @@ ToolMain::ToolMain()
 	m_mousePos = LPPOINT();
 	//Get the address of the selected objects
 	m_selectedObject = &ObjectHandler::Instance().m_selectedObjects;
-
 }
 
 
@@ -349,16 +348,16 @@ void ToolMain::UpdateInput(const MSG* msg)
 	}
 	else m_toolInputCommands.left = false;
 
+	//rotation
 	if (m_keyArray['D'])
 	{
 		m_toolInputCommands.right = true;
 	}
 	else m_toolInputCommands.right = false;
-	//rotation
+
 	if (m_keyArray['E'])
 	{
 		m_toolInputCommands.rotRight = true;
-		m_keyArray['E'] = false;
 	}
 	else m_toolInputCommands.rotRight = false;
 	if (m_keyArray['Q'])
@@ -489,5 +488,13 @@ void ToolMain::UpdateInput(const MSG* msg)
 		m_keyArray['V'] = false;
 		//Paste previously copied objects
 		ObjectHandler::Instance().Paste();
+	}
+
+	//If A and Control(Crtl + A) is pressed then
+	if (m_keyArray['A'] && m_toolInputCommands.controlDown)
+	{
+		m_keyArray['A'] = false;
+		//Select all objects
+		ObjectHandler::Instance().SelectAll();
 	}
 }

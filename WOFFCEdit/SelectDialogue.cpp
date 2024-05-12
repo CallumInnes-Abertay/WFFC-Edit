@@ -60,6 +60,7 @@ void SelectDialogue::DoDataExchange(CDataExchange* pDX)
 
 void SelectDialogue::End()
 {
+	ObjectHandler::Instance().m_isEditing = false;
 	DestroyWindow();
 	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
 }

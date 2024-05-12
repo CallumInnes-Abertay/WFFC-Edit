@@ -16,6 +16,7 @@ void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects,
 	}
 }
 
+//Update for object handler, primarily used for object manipulation
 void ObjectHandler::Update(const InputCommands& input_commands)
 {
 	// If there is selected objects
@@ -95,7 +96,7 @@ void ObjectHandler::MultiTextureChange()
 	}
 }
 // Remove texture changes for a specific object
-void ObjectHandler::RemoveTextureChange(int idToRemove)
+void ObjectHandler::RemoveTextureChange(const int idToRemove)
 {
 	//Loop through all objects
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
@@ -139,20 +140,25 @@ void ObjectHandler::RemoveAllTextureChanges()
 	}
 }
 
+//Get the last selected object
 DisplayObject ObjectHandler::GetLastSelectedDisplayObject()
 {
+	//Loop through all objects
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
 	{
-		if (m_selectedObjects.empty()) return DisplayObject();
+		if (m_selectedObjects.empty()) return {};
+		//If the object is the last one the user has selected then return that one
 		if (i == (m_selectedObjects.back()))
 		{
 			return (*m_allDisplayObjects)[i];
 		}
 	}
-	return DisplayObject();
+	//Else return null
+	return {};
 }
 
 
+//Get a specific object by its ID.
 DisplayObject ObjectHandler::GetObject(int id)
 {
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
@@ -162,18 +168,23 @@ DisplayObject ObjectHandler::GetObject(int id)
 			return (*m_allDisplayObjects)[i];
 		}
 	}
-	return DisplayObject();
+	return {};
 }
 
+//Set a display object with new parameters to override it with
 void ObjectHandler::SetDisplayObject(const DisplayObject& newObjectParams)
 {
+	//Loop through all objects
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
 	{
+		//If it matches to the one to change
 		if (i == newObjectParams.m_ID)
 		{
+			//Change position,scale,rotation
 			(*m_allDisplayObjects)[i].m_position = newObjectParams.m_position;
 			(*m_allDisplayObjects)[i].m_scale = newObjectParams.m_scale;
 			(*m_allDisplayObjects)[i].m_orientation = newObjectParams.m_orientation;
+			//No point continuing to iterate if object changed
 			return;
 		}
 	}
@@ -262,7 +273,7 @@ void ObjectHandler::DeleteObjects()
 
 		// Since display objects can't be directly compared use a lambda to check if the id of one object matches up with the selected object bound for deletion
 		auto obj = std::find_if(m_allDisplayObjects->begin(), m_allDisplayObjects->end(),
-		                        [objectId](const DisplayObject& obj) { return obj.m_ID == objectId; });
+		                        [objectId](const DisplayObject& currentObj) { return currentObj.m_ID == objectId; });
 
 		//If it does, then erase that from the list of display objects
 		if (obj != m_allDisplayObjects->end()) m_allDisplayObjects->erase(obj);
@@ -298,37 +309,56 @@ void ObjectHandler::Paste()
 	// Loop through all objects that are made to be copied
 	for (int i = 0; i < m_objectsToCopy.size(); i++)
 	{
-		//Creating a new object with these parameters
 		DisplayObject objectToPaste;
+		//Creating a new object with these parameters
+		objectToPaste = m_objectsToCopy[i];
+		////Setting their id temporarily to the size of the vector
+		//objectToPaste.m_ID = m_allDisplayObjects->size();
 
-		//Setting their id temporarily to the size of the vector
-		objectToPaste.m_ID = m_allDisplayObjects->size();
+		//// And copying the vector
+		//objectToPaste.m_model = m_objectsToCopy[i].m_model;
 
-		// And copying the vector
-		objectToPaste.m_model = m_objectsToCopy[i].m_model;
-
-		//apply new texture to models effect
-		objectToPaste.m_model->UpdateEffects(
-			[&](DirectX::IEffect* effect)
-			{
-				auto lights = dynamic_cast<DirectX::BasicEffect*>(effect);
-				if (lights)
-				{
-					lights->SetTexture(m_objectsToCopy[i].m_texture_diffuse);
-				}
-			});
+		////apply new texture to models effect
+		//objectToPaste.m_model->UpdateEffects(
+		//	[&](DirectX::IEffect* effect)
+		//	{
+		//		auto lights = dynamic_cast<DirectX::BasicEffect*>(effect);
+		//		if (lights)
+		//		{
+		//			lights->SetTexture(m_objectsToCopy[i].m_texture_diffuse);
+		//		}
+		//	});
 
 		//Set up the position (but above the original by a bit to highlight they've been pasted)
 		Vector3 pos(m_objectsToCopy[i].m_position.x, m_objectsToCopy[i].m_position.y + 2,
 		            m_objectsToCopy[i].m_position.z);
 
+		//Sets the new object to the 
 		objectToPaste.m_position = pos;
-		objectToPaste.m_scale = m_objectsToCopy[i].m_scale;
-		objectToPaste.m_orientation = m_objectsToCopy[i].m_orientation;
+		//objectToPaste.m_scale = m_objectsToCopy[i].m_scale;
+		//objectToPaste.m_orientation = m_objectsToCopy[i].m_orientation;
 
 		//Add that to the list of all objects.
 		m_allDisplayObjects->push_back(objectToPaste);
+
+
 	}
+
+	//Reset all IDs
+	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
+	{
+		(*m_allDisplayObjects)[i].m_ID = i;
+	}
+}
+
+void ObjectHandler::SelectAll()
+{
+	m_selectedObjects.clear();
+	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
+	{
+		m_selectedObjects.push_back(i);
+	}
+	MultiTextureChange();
 }
 
 bool ObjectHandler::m_isInstanceMade = false;

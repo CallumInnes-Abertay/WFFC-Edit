@@ -156,6 +156,7 @@ void CameraController::FocusCamera(const Vector3& targetPosition)
 // Set camera orientation to look at a specific target (the object)
 void CameraController::LookAt(const Vector3& target)
 {
+	// Calculate differences in coordinates
 	float dx = target.x - m_camPosition.x;
 	float dy = target.y - m_camPosition.y;
 	float dz = target.z - m_camPosition.z;

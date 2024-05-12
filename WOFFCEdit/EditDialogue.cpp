@@ -7,6 +7,7 @@
 
 #include "DisplayObject.h"
 #include "ObjectHandler.h"
+#include "resource.h"
 
 #include "stdafx.h"
 
@@ -89,7 +90,7 @@ BOOL EditDialogue::PreTranslateMessage(MSG* pMsg)
 			IDC_EDIT_X_SCALE, IDC_EDIT_Y_SCALE, IDC_EDIT_Z_SCALE,
 			IDC_EDIT_X_ROTATION, IDC_EDIT_Y_ROTATION, IDC_EDIT_Z_ROTATION
 		};
-		for (int id : controls)
+		for (const int id : controls)
 		{
 			if (pMsg->hwnd == GetDlgItem(id)->m_hWnd)
 			{
@@ -105,6 +106,8 @@ BOOL EditDialogue::PreTranslateMessage(MSG* pMsg)
 
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
+
+
 
 void EditDialogue::OnKillfocusEdit(CEdit& controlEdit)
 {
@@ -123,7 +126,7 @@ void EditDialogue::End()
 {
 	ObjectHandler::Instance().m_isEditing = false;
 	DestroyWindow();
-	//destory the window properly.  INcluding the links and pointers created.  THis is so the dialogue can start again. 
+	//destory the window properly.  Including the links and pointers created.  This is so the dialogue can start again. 
 }
 
 BOOL EditDialogue::OnInitDialog()

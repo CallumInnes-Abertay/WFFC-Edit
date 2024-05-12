@@ -20,6 +20,8 @@ public:
 		return instance;
 	}
 
+
+	//Disable both copy and assignment operators to ensure the singleton pattern is respected.
 	ObjectHandler(const ObjectHandler&) = delete; // Disable copy constructor
 	void operator=(const ObjectHandler&) = delete; // Disable assignment operator
 
@@ -43,6 +45,7 @@ public:
 	void DeleteObjects();
 	void Copy();
 	void Paste();
+	void SelectAll();
 
 
 	bool m_isEditing = false;
@@ -61,8 +64,7 @@ private:
 	static bool m_isInstanceMade;
 };
 
-// Implementations
 
-inline ObjectHandler::ObjectHandler()
+inline ObjectHandler::ObjectHandler(): m_allDisplayObjects(nullptr)
 {
 } // Private default constructor

@@ -73,12 +73,8 @@ int MFCMain::Run()
 		}
 		else
 		{
-			std::vector<int>* selectedObjects = m_ToolSystem.getCurrentSelectionIDs();
 			std::wstring selectedObjectsString;
-			if (selectedObjects != nullptr)
-				selectedObjectsString = VectorToWideString(*selectedObjects);
-			else
-				selectedObjectsString = std::wstring(L"The selected objects are");
+			selectedObjectsString = VectorToWideString(ObjectHandler::Instance().m_selectedObjects);
 			std::wstring statusString = selectedObjectsString;
 			m_ToolSystem.Tick(&msg);
 
