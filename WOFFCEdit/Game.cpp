@@ -431,6 +431,12 @@ void Game::OnWindowSizeChanged(int width, int height)
 
 void Game::BuildDisplayList(std::vector<SceneObject>* SceneGraph)
 {
+	for(int i =0; i < m_displayList.size(); i++)
+	{
+		m_displayList[i].m_texture_diffuse->Release();
+		m_displayList[i].m_texture_diffuse = nullptr;
+	}
+
 	auto device = m_deviceResources->GetD3DDevice();
 	auto devicecontext = m_deviceResources->GetD3DDeviceContext();
 
