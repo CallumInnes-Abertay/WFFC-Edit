@@ -36,17 +36,17 @@ SelectDialogue::~SelectDialogue()
 }
 
 ///pass through pointers to the data in the tool we want to manipulate
-void SelectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph, int selection)
+void SelectDialogue::SetObjectData(std::vector<SceneObject>* SceneGraph)
 {
 	m_sceneGraph = SceneGraph;
-	m_currentSelection = &selection;
 
 	//roll through all the objects in the scene graph and put an entry for each in the listbox
-	int numSceneObjects = m_sceneGraph->size();
+	int numSceneObjects = ObjectHandler::Instance().GetDisplayObjects()->size();
 	for (int i = 0; i < numSceneObjects; i++)
 	{
-		//easily possible to make the data string presented more complex. showing other columns.
-		std::wstring listBoxEntry = std::to_wstring(m_sceneGraph->at(i).ID);
+		//easily possible to make the data string presented more complex. showing other columns.in
+		int id = ((*ObjectHandler::Instance().GetDisplayObjects())[i].m_ID);
+		std::wstring listBoxEntry = std::to_wstring(id);
 		m_listBox.AddString(listBoxEntry.c_str());
 	}
 }
@@ -85,7 +85,7 @@ void SelectDialogue::Select()
 
 	m_listBox.GetText(index, currentSelectionValue);
 
-	*m_currentSelection = _ttoi(currentSelectionValue);
+	m_currentSelection = _ttoi(currentSelectionValue);
 
 	// If something is already selected
 	if (!ObjectHandler::Instance().m_selectedObjects.empty())
@@ -94,15 +94,32 @@ void SelectDialogue::Select()
 		ObjectHandler::Instance().RemoveAllTextureChanges();
 	}
 
-
+	//If it's already selected
 	if (std::find(ObjectHandler::Instance().m_selectedObjects.begin(),
 	              ObjectHandler::Instance().m_selectedObjects.end(),
-	              *m_currentSelection) != ObjectHandler::Instance().m_selectedObjects.end())
+	              m_currentSelection) != ObjectHandler::Instance().m_selectedObjects.end())
 	{
-		return;
+		bool wasDuplicated = false;
+		if (!ObjectHandler::Instance().m_selectedObjects.empty())
+		{
+			wasDuplicated = RemoveIntFromVector(ObjectHandler::Instance().m_selectedObjects, m_currentSelection);
+		}
+		// If the selected object wasn't already in the vector, then add it and change the texture appropriately.
+		if (m_currentSelection != -1 && !wasDuplicated)
+		{
+			ObjectHandler::Instance().m_selectedObjects.push_back(m_currentSelection);
+
+			ObjectHandler::Instance().MultiTextureChange();
+			return;
+		}
+		//If it was, then it's already removed, and thus should have a deselected texture.
+		if (m_currentSelection != -1 && wasDuplicated)
+		{
+			ObjectHandler::Instance().RemoveTextureChange(m_currentSelection);
+		}
 	}
 	//And set a new selection and then add a selected texture to it.
-	ObjectHandler::Instance().m_selectedObjects.push_back(*m_currentSelection);
+	ObjectHandler::Instance().m_selectedObjects.push_back(m_currentSelection);
 	ObjectHandler::Instance().MultiTextureChange();
 }
 

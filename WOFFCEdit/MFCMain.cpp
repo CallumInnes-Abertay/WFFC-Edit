@@ -109,11 +109,11 @@ void MFCMain::MenuEditSelect()
 	m_ToolSelectDialogue.ShowWindow(SW_SHOW); //show modeless
 	if (m_ToolSystem.m_selectedObject != nullptr)
 	{
-		m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, ((*m_ToolSystem.m_selectedObject)[0]));
+		m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph);
 	}
 	else
 	{
-		m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, -1);
+		m_ToolSelectDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph);
 	}
 }
 

@@ -16,7 +16,7 @@ public:
 	// modal // takes in out scenegraph in the constructor
 	SelectDialogue(CWnd* pParent = nullptr);
 	~SelectDialogue() override;
-	void SetObjectData(std::vector<SceneObject>* SceneGraph, int Selection);
+	void SetObjectData(std::vector<SceneObject>* SceneGraph);
 	//passing in pointers to the data the class will operate on.
 
 	// Dialog Data
@@ -31,7 +31,7 @@ protected:
 	afx_msg void Select(); //Item has been selected
 
 	std::vector<SceneObject>* m_sceneGraph;
-	int* m_currentSelection;
+	int m_currentSelection;
 
 
 	DECLARE_MESSAGE_MAP()

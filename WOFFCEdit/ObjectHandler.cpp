@@ -365,3 +365,21 @@ void ObjectHandler::SelectAll()
 }
 
 bool ObjectHandler::m_isInstanceMade = false;
+
+// Remove an int (selection id) from a vector, making sure to account for iterating over the vector.
+bool RemoveIntFromVector(std::vector<int>& vec, const int target)
+{
+	// Find the element
+	auto it = std::find(vec.begin(), vec.end(), target);
+
+	// Check if found
+	if (it != vec.end())
+	{
+		// Erase the element and return true
+		vec.erase(it);
+		return true;
+	}
+
+	// Not found, return false
+	return false;
+}

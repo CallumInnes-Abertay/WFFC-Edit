@@ -28,6 +28,7 @@ public:
 	void Initialise(std::vector<DisplayObject>* startingObjects,
 	                const std::shared_ptr<DX::DeviceResources>& deviceResources);
 	void Update(const InputCommands& inputCommands);
+	std::vector<DisplayObject>* GetDisplayObjects() { return m_allDisplayObjects; }
 	static bool IsInstanceMade() { return m_isInstanceMade; }
 
 	void MultiTextureChange();
@@ -70,3 +71,5 @@ private:
 inline ObjectHandler::ObjectHandler(): m_allDisplayObjects(nullptr)
 {
 } // Private default constructor
+
+bool RemoveIntFromVector(std::vector<int>& vec, int target);
