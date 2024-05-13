@@ -26,8 +26,8 @@ public:
 	void operator=(const ObjectHandler&) = delete; // Disable assignment operator
 
 	void Initialise(std::vector<DisplayObject>* startingObjects,
-	                const std::shared_ptr<DX::DeviceResources>& device_resources);
-	void Update(const InputCommands& input_commands);
+	                const std::shared_ptr<DX::DeviceResources>& deviceResources);
+	void Update(const InputCommands& inputCommands);
 	static bool IsInstanceMade() { return m_isInstanceMade; }
 
 	void MultiTextureChange();
@@ -60,7 +60,9 @@ private:
 
 	//Seperate vector to selected objects so users can still select without worrying about messing with their copied objects.
 	std::vector<DisplayObject> m_objectsToCopy;
-	std::shared_ptr<DX::DeviceResources> m_device_resource;
+	std::shared_ptr<DX::DeviceResources> m_deviceResource;
+
+	//Static bool to handle usage of object handler in classes that start before objecthandler creation.
 	static bool m_isInstanceMade;
 };
 

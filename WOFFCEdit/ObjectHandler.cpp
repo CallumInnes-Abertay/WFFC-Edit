@@ -4,10 +4,10 @@
 
 
 void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects,
-                               const std::shared_ptr<DX::DeviceResources>& device_resources)
+                               const std::shared_ptr<DX::DeviceResources>& deviceResources)
 {
 	m_allDisplayObjects = startingObjects;
-	m_device_resource = device_resources;
+	m_deviceResource = deviceResources;
 
 	// Make sure each object has it's own ID
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
@@ -17,7 +17,7 @@ void ObjectHandler::Initialise(std::vector<DisplayObject>* startingObjects,
 }
 
 //Update for object handler, primarily used for object manipulation
-void ObjectHandler::Update(const InputCommands& input_commands)
+void ObjectHandler::Update(const InputCommands& inputCommands)
 {
 	// If there is selected objects
 	if (!m_selectedObjects.empty())
@@ -28,25 +28,25 @@ void ObjectHandler::Update(const InputCommands& input_commands)
 			if (std::find(m_selectedObjects.begin(), m_selectedObjects.end(), i) != m_selectedObjects.end())
 			{
 				//Up
-				if (input_commands.upArrowDown)
+				if (inputCommands.upArrowDown)
 				{
 					(*m_allDisplayObjects)[i].m_position.x += 0.1f;
 				}
 
 				//Down
-				if (input_commands.downArrowDown)
+				if (inputCommands.downArrowDown)
 				{
 					(*m_allDisplayObjects)[i].m_position.x -= 0.1f;
 				}
 
 				//Left
-				if (input_commands.leftArrowDown)
+				if (inputCommands.leftArrowDown)
 				{
 					(*m_allDisplayObjects)[i].m_position.z -= 0.1f;
 				}
 
 				//Right
-				if (input_commands.rightArrowDown)
+				if (inputCommands.rightArrowDown)
 				{
 					(*m_allDisplayObjects)[i].m_position.z += 0.1f;
 				}
@@ -65,7 +65,7 @@ void ObjectHandler::MultiTextureChange()
 		if (std::find(m_selectedObjects.begin(), m_selectedObjects.end(), i) != m_selectedObjects.end())
 		{
 			//Then set the "error" texture to act as a indicator
-			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/error.dds",
+			DirectX::CreateDDSTextureFromFile(m_deviceResource->GetD3DDevice(), L"database/data/error.dds",
 			                                  nullptr, &(*m_allDisplayObjects)[i].m_texture_diffuse);
 			(*m_allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
 			{
@@ -81,7 +81,7 @@ void ObjectHandler::MultiTextureChange()
 		else if (std::find(m_selectedObjects.begin(), m_selectedObjects.end(), i) == m_selectedObjects.end())
 		{
 			//Then set the "error" texture to act as a default texture, showing it's not selected
-			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+			DirectX::CreateDDSTextureFromFile(m_deviceResource->GetD3DDevice(), L"database/data/placeholder.dds",
 			                                  nullptr,
 			                                  &(*m_allDisplayObjects)[i].m_texture_diffuse);
 			(*m_allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
@@ -105,7 +105,7 @@ void ObjectHandler::RemoveTextureChange(const int idToRemove)
 		if (idToRemove == i)
 		{
 			//Then change the texture back to the "default" placeholder
-			DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+			DirectX::CreateDDSTextureFromFile(m_deviceResource->GetD3DDevice(), L"database/data/placeholder.dds",
 			                                  nullptr,
 			                                  &(*m_allDisplayObjects)[i].m_texture_diffuse);
 			(*m_allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
@@ -126,7 +126,7 @@ void ObjectHandler::RemoveAllTextureChanges()
 	//Loop through all objects, changing them back to placeholder.dds
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
 	{
-		DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+		DirectX::CreateDDSTextureFromFile(m_deviceResource->GetD3DDevice(), L"database/data/placeholder.dds",
 		                                  nullptr,
 		                                  &(*m_allDisplayObjects)[i].m_texture_diffuse);
 		(*m_allDisplayObjects)[i].m_model->UpdateEffects([&](DirectX::IEffect* effect)
@@ -209,7 +209,7 @@ void ObjectHandler::SpawnObject()
 {
 	DisplayObject objectToSpawn;
 	objectToSpawn.m_model = (*m_allDisplayObjects)[0].m_model;
-	DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+	DirectX::CreateDDSTextureFromFile(m_deviceResource->GetD3DDevice(), L"database/data/placeholder.dds",
 	                                  nullptr, &objectToSpawn.m_texture_diffuse);
 	objectToSpawn.m_model->UpdateEffects([&](DirectX::IEffect* effect)
 	{
@@ -242,7 +242,7 @@ void ObjectHandler::SpawnObject(DisplayObject objectToSpawn)
 
 	//Set model and texture 
 	objectToSpawn.m_model = (*m_allDisplayObjects)[0].m_model;
-	DirectX::CreateDDSTextureFromFile(m_device_resource->GetD3DDevice(), L"database/data/placeholder.dds",
+	DirectX::CreateDDSTextureFromFile(m_deviceResource->GetD3DDevice(), L"database/data/placeholder.dds",
 	                                  nullptr, &objectToSpawn.m_texture_diffuse);
 	objectToSpawn.m_model->UpdateEffects([&](DirectX::IEffect* effect)
 	{
@@ -351,9 +351,12 @@ void ObjectHandler::Paste()
 	}
 }
 
+//Select all objects in the scene
 void ObjectHandler::SelectAll()
 {
+	//Clear the vector as we're about to select everything anyway
 	m_selectedObjects.clear();
+	//Select everything
 	for (int i = 0; i < m_allDisplayObjects->size(); ++i)
 	{
 		m_selectedObjects.push_back(i);

@@ -249,8 +249,6 @@ int Game::MousePicking()
 }
 
 
-
-
 void Game::FocusOnObject()
 {
 	m_camera->FocusCamera(ObjectHandler::Instance().GetLastSelectedDisplayObject().m_position);
@@ -431,7 +429,7 @@ void Game::OnWindowSizeChanged(int width, int height)
 
 void Game::BuildDisplayList(std::vector<SceneObject>* SceneGraph)
 {
-	for(int i =0; i < m_displayList.size(); i++)
+	for (int i = 0; i < m_displayList.size(); i++)
 	{
 		m_displayList[i].m_texture_diffuse->Release();
 		m_displayList[i].m_texture_diffuse = nullptr;

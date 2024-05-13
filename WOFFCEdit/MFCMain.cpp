@@ -120,6 +120,19 @@ void MFCMain::MenuEditSelect()
 //Set up the edit dialog
 void MFCMain::MenuEditEdit()
 {
+	//If the user hasn't selected an object to edit.
+	if (ObjectHandler::Instance().m_selectedObjects.empty())
+	{
+		CString message;
+		// Load the string from the string table.
+		message.LoadString(IDS_NO_OBJECTS_SELECTED);
+
+		// Display error message box with clear instructions and an appropriate icon
+		AfxMessageBox(message, MB_ICONEXCLAMATION | MB_OK);
+		// Can return early since no more is needed.
+		return;
+	}
+
 	if (m_ToolSystem.m_selectedObject != nullptr)
 	{
 		m_ToolEditDialogue.SetObjectData(&m_ToolSystem.m_sceneGraph, ((*m_ToolSystem.m_selectedObject)[0]));

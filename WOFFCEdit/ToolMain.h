@@ -16,7 +16,7 @@ public: //methods
 	~ToolMain();
 
 	//onAction - These are the interface to MFC
-	std::vector<int>* getCurrentSelectionIDs();
+	std::vector<int>* getCurrentSelectionIDs() const;
 	//returns the selection number of currently selected object so that It can be displayed.
 	void onActionInitialise(HWND handle, int width, int height);
 	//Passes through handle and hieght and width and initialises DirectX renderer and SQL LITE

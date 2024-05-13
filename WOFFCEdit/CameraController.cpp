@@ -93,18 +93,18 @@ void CameraController::Update(const InputCommands& input_commands)
 	m_view = Matrix::CreateLookAt(m_camPosition, m_camLookAt, Vector3::UnitY);
 }
 
-void CameraController::HandleMouse(const InputCommands& input_commands)
+void CameraController::HandleMouse(const InputCommands& inputCommands)
 {
-	m_newMouse = Vector2(input_commands.mouseX, input_commands.mouseY);
+	m_newMousePosition = Vector2(inputCommands.mouseX, inputCommands.mouseY);
 
 	//Only allow mouse movement if holding right mouse button
-	if (input_commands.RMB)
+	if (inputCommands.RMB)
 	{
 		Vector2 Difference;
 
 		// Calculate mouse movement difference
-		Difference.x = m_newMouse.x - m_oldMouse.x;
-		Difference.y = m_newMouse.y - m_oldMouse.y;
+		Difference.x = m_newMousePosition.x - m_oldMouse_pos.x;
+		Difference.y = m_newMousePosition.y - m_oldMouse_pos.y;
 
 		Difference.Normalize();
 
@@ -129,6 +129,7 @@ void CameraController::HandleMouse(const InputCommands& input_commands)
 		sinY = sinf(m_camOrientation.y * (3.1415 / 180));
 		sinR = sinf(m_camOrientation.z * (3.1415 / 180));
 
+		// Get the look direction through the sin and cosine of the yaw and pitch angles
 		m_camLookDirection.x = sinY * cosP;
 		m_camLookDirection.y = sinP;
 		m_camLookDirection.z = cosP * -cosY;
@@ -138,8 +139,8 @@ void CameraController::HandleMouse(const InputCommands& input_commands)
 		m_view = Matrix::CreateLookAt(m_camPosition, m_camLookAt, Vector3::UnitY);
 	}
 
-
-	m_oldMouse = m_newMouse;
+	//Set the old mouse pos to the new mouse pos so the cycle can continbue
+	m_oldMouse_pos = m_newMousePosition;
 }
 
 void CameraController::FocusCamera(const Vector3& targetPosition)
@@ -149,7 +150,7 @@ void CameraController::FocusCamera(const Vector3& targetPosition)
 	m_camPosition.y = targetPosition.y + 1;
 	m_camPosition.z = targetPosition.z - 3;
 
-	// Then change rotation
+	// Then change rotation so the camera looks at the object
 	LookAt(targetPosition);
 }
 

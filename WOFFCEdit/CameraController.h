@@ -18,7 +18,7 @@ public:
 protected:
 	void Init();
 	void CreateUpdate();
-	void HandleMouse(const InputCommands& input_commands);
+	void HandleMouse(const InputCommands& inputCommands);
 
 
 	//Floats
@@ -32,8 +32,8 @@ protected:
 	Vector3 m_camLookDirection;
 	Vector3 m_camRight;
 
-	Vector2 m_oldMouse;
-	Vector2 m_newMouse;
+	Vector2 m_oldMouse_pos;
+	Vector2 m_newMousePosition;
 
 
 	//Matrices

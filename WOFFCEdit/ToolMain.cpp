@@ -31,7 +31,7 @@ ToolMain::~ToolMain()
 }
 
 
-std::vector<int>* ToolMain::getCurrentSelectionIDs()
+std::vector<int>* ToolMain::getCurrentSelectionIDs() const
 {
 	return m_selectedObject;
 }
@@ -297,6 +297,7 @@ void ToolMain::Tick(MSG* msg)
 
 void ToolMain::UpdateInput(const MSG* msg)
 {
+	//Input handler
 	switch (msg->message)
 	{
 	//Global inputs,  mouse position and keys etc
@@ -309,6 +310,7 @@ void ToolMain::UpdateInput(const MSG* msg)
 		break;
 
 	case WM_MOUSEMOVE:
+		//Get the mouse positions on the x and y 
 		m_toolInputCommands.mouseX = GET_X_LPARAM(msg->lParam);
 		m_toolInputCommands.mouseY = GET_Y_LPARAM(msg->lParam);
 		break;
@@ -329,8 +331,7 @@ void ToolMain::UpdateInput(const MSG* msg)
 		break;
 	default: ;
 	}
-	//here we update all the actual app functionality that we want.  This information will either be used int toolmain, or sent down to the renderer (Camera movement etc
-	//WASD movement
+	//WASD movement for camera
 	if (m_keyArray['W'])
 	{
 		m_toolInputCommands.forward = true;
@@ -348,13 +349,13 @@ void ToolMain::UpdateInput(const MSG* msg)
 	}
 	else m_toolInputCommands.left = false;
 
-	//rotation
 	if (m_keyArray['D'])
 	{
 		m_toolInputCommands.right = true;
 	}
 	else m_toolInputCommands.right = false;
 
+	//camera rotation
 	if (m_keyArray['E'])
 	{
 		m_toolInputCommands.rotRight = true;
@@ -377,6 +378,8 @@ void ToolMain::UpdateInput(const MSG* msg)
 		m_toolInputCommands.rotDown = true;
 	}
 	else m_toolInputCommands.rotDown = false;
+
+	//Object Movement 
 	if (!ObjectHandler::Instance().m_isEditing)
 	{
 		// left arrow Key
